@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jedi Force Training</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -231,6 +232,9 @@
         .btn-success { background: var(--success); color: white; }
         .btn-success:hover { box-shadow: 0 8px 24px rgba(76, 175, 80, 0.4); }
 
+        .btn-sync { background: linear-gradient(135deg, var(--jedi-blue) 0%, var(--jedi-light-blue) 100%); color: white; }
+        .btn-sync:hover { box-shadow: 0 8px 24px rgba(30, 136, 229, 0.4); }
+
         .charts-section { margin-top: 40px; }
 
         .chart-container {
@@ -283,6 +287,14 @@
                 <div class="card">
                     <h2>Select Workout</h2>
                     <div id="workoutButtons" style="max-height: 400px; overflow-y: auto;"></div>
+                </div>
+
+                <div class="card">
+                    <h2>📱 Sync Data</h2>
+                    <button class="btn btn-sync" id="syncBtn" onclick="handleGoogleDriveSync()" style="width: 100%; margin-top: 0;">
+                        Sync to Google Drive
+                    </button>
+                    <p id="syncStatus" style="font-size: 0.8em; margin-top: 10px; color: var(--text-secondary); text-align: center;"></p>
                 </div>
             </div>
 
@@ -1123,6 +1135,131 @@
         }
 
         window.addEventListener('load', init);
+    </script>
+
+    <script>
+        // Google Drive Integration
+        const CLIENT_ID = '153847011083-abq42kssquls5mmshde7k106m8rt9pjo.apps.googleusercontent.com';
+        const SCOPES = 'https://www.googleapis.com/auth/drive.file';
+        
+        let tokenClient;
+        let accessToken = null;
+
+        // Initialize Google Sign-In
+        function initializeGoogleSignIn() {
+            tokenClient = google.accounts.oauth2.initTokenClient({
+                client_id: CLIENT_ID,
+                scope: SCOPES,
+                callback: (tokenResponse) => {
+                    accessToken = tokenResponse.access_token;
+                    syncToDrive();
+                },
+            });
+        }
+
+        window.addEventListener('load', () => {
+            initializeGoogleSignIn();
+        });
+
+        // Handle Google Drive Sync
+        window.handleGoogleDriveSync = async function() {
+            const syncBtn = document.getElementById('syncBtn');
+            const syncStatus = document.getElementById('syncStatus');
+            
+            syncBtn.disabled = true;
+            syncStatus.textContent = 'Preparing sync...';
+            syncStatus.style.color = 'var(--jedi-accent)';
+
+            if (!accessToken) {
+                tokenClient.requestAccessToken({ prompt: 'consent' });
+            } else {
+                syncToDrive();
+            }
+        };
+
+        async function syncToDrive() {
+            const syncStatus = document.getElementById('syncStatus');
+            const syncBtn = document.getElementById('syncBtn');
+
+            try {
+                syncStatus.textContent = 'Syncing to Google Drive...';
+
+                // Create or update file in Google Drive
+                const fileData = {
+                    date: new Date().toISOString(),
+                    workouts: workoutData
+                };
+
+                const fileName = 'Jedi_Force_Training_Workouts.json';
+                
+                // First, try to find if file already exists
+                const searchResponse = await fetch(
+                    `https://www.googleapis.com/drive/v3/files?q=name='${fileName}' and trashed=false&spaces=drive&fields=files(id,name)`,
+                    {
+                        headers: { 'Authorization': `Bearer ${accessToken}` }
+                    }
+                );
+
+                const searchData = await searchResponse.json();
+                let fileId = null;
+
+                if (searchData.files && searchData.files.length > 0) {
+                    fileId = searchData.files[0].id;
+                }
+
+                // Prepare the file content
+                const blob = new Blob([JSON.stringify(fileData, null, 2)], { type: 'application/json' });
+                const metadata = { name: fileName };
+
+                let url, method;
+                if (fileId) {
+                    // Update existing file
+                    url = `https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=multipart`;
+                    method = 'PATCH';
+                } else {
+                    // Create new file
+                    url = 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
+                    method = 'POST';
+                }
+
+                // Create multipart body
+                const multipartBody = 
+                    '--boundary\r\n' +
+                    'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
+                    JSON.stringify(metadata) + '\r\n' +
+                    '--boundary\r\n' +
+                    'Content-Type: application/json\r\n\r\n' +
+                    JSON.stringify(fileData) + '\r\n' +
+                    '--boundary--';
+
+                const uploadResponse = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'multipart/related; boundary=boundary'
+                    },
+                    body: multipartBody
+                });
+
+                if (uploadResponse.ok) {
+                    const timestamp = new Date().toLocaleTimeString();
+                    syncStatus.textContent = `✓ Synced at ${timestamp}`;
+                    syncStatus.style.color = 'var(--success)';
+                    
+                    setTimeout(() => {
+                        syncStatus.textContent = '';
+                    }, 3000);
+                } else {
+                    throw new Error('Upload failed');
+                }
+            } catch (error) {
+                console.error('Sync error:', error);
+                syncStatus.textContent = '✗ Sync failed. Check console.';
+                syncStatus.style.color = 'var(--warning)';
+            } finally {
+                syncBtn.disabled = false;
+            }
+        }
     </script>
 </body>
 </html>
