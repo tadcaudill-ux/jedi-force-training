@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jedi Force Training</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --jedi-dark: #0a1628;
+            --jedi-blue: #1e88e5;
+            --jedi-light-blue: #42a5f5;
+            --jedi-accent: #64b5f6;
+            --jedi-gold: #ffd700;
+            --text-primary: #e8f1ff;
+            --text-secondary: #b3d9ff;
+            --success: #4caf50;
+            --warning: #ff9800;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--jedi-dark) 0%, #0d1f34 100%);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        body { background-attachment: fixed; }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(30, 136, 229, 0.1) 0%, transparent 70%);
+            animation: glow 8s ease-in-out infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes glow { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(30px, 30px); } }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, rgba(30, 136, 229, 0.2) 0%, rgba(66, 165, 245, 0.1) 100%);
+            border: 1px solid rgba(100, 181, 246, 0.3);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+        h1 { font-size: 2.5em; font-weight: 700; margin-bottom: 10px; text-shadow: 0 0 20px rgba(30, 136, 229, 0.5); letter-spacing: 2px; }
+
+        .tagline { font-size: 0.95em; color: var(--text-secondary); font-style: italic; letter-spacing: 1px; }
+
+        .main-content { display: grid; grid-template-columns: 1fr 2fr; gap: 30px; margin-bottom: 40px; }
+
+        .sidebar { display: flex; flex-direction: column; gap: 20px; }
+
+        .card {
+            background: linear-gradient(135deg, rgba(30, 136, 229, 0.15) 0%, rgba(15, 40, 71, 0.5) 100%);
+            border: 1px solid rgba(100, 181, 246, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover { border-color: rgba(100, 181, 246, 0.6); box-shadow: 0 8px 32px rgba(30, 136, 229, 0.2); transform: translateY(-4px); }
+
+        .card h2 { font-size: 1.3em; margin-bottom: 15px; color: var(--jedi-light-blue); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(100, 181, 246, 0.3);
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            background: transparent;
+            color: var(--text-secondary);
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.9em;
+        }
+
+        .tab-btn.active {
+            color: var(--jedi-light-blue);
+            border-bottom-color: var(--jedi-gold);
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .workout-btn {
+            padding: 12px 16px;
+            background: linear-gradient(135deg, var(--jedi-blue) 0%, var(--jedi-light-blue) 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: left;
+            margin-bottom: 8px;
+            width: 100%;
+        }
+
+        .workout-btn:hover { transform: translateX(4px); box-shadow: 0 6px 20px rgba(30, 136, 229, 0.4); }
+
+        .workout-btn.active { box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); border: 2px solid var(--jedi-gold); }
+
+        label { display: block; margin-bottom: 8px; font-size: 0.95em; color: var(--text-secondary); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        input, select { width: 100%; padding: 10px 12px; background: rgba(30, 136, 229, 0.1); border: 1px solid rgba(100, 181, 246, 0.3); border-radius: 6px; color: var(--text-primary); font-size: 1em; transition: all 0.3s ease; margin-bottom: 8px; }
+
+        input:focus, select:focus { outline: none; border-color: var(--jedi-light-blue); box-shadow: 0 0 12px rgba(66, 165, 245, 0.3); background: rgba(30, 136, 229, 0.2); }
+
+        select option { background: var(--jedi-dark); color: var(--text-primary); }
+
+        .exercise-list { max-height: 600px; overflow-y: auto; padding-right: 8px; }
+
+        .exercise-item { background: rgba(15, 40, 71, 0.4); padding: 12px; border-left: 3px solid var(--jedi-light-blue); margin-bottom: 12px; border-radius: 4px; }
+
+        .exercise-name { font-weight: 600; color: var(--jedi-light-blue); margin-bottom: 8px; }
+
+        .exercise-details { font-size: 0.85em; color: var(--text-secondary); line-height: 1.4; }
+
+        .superset-group {
+            background: linear-gradient(135deg, rgba(100, 181, 246, 0.15) 0%, rgba(66, 165, 245, 0.1) 100%);
+            border: 2px solid var(--jedi-gold);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.15);
+        }
+
+        .superset-header { display: flex; align-items: center; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 2px solid var(--jedi-gold); }
+
+        .superset-icon { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: var(--jedi-gold); color: var(--jedi-dark); border-radius: 50%; font-weight: 700; margin-right: 10px; }
+
+        .superset-title { font-size: 1.1em; font-weight: 700; color: var(--jedi-gold); text-transform: uppercase; flex: 1; }
+
+        .superset-rounds { background: var(--jedi-gold); color: var(--jedi-dark); padding: 4px 12px; border-radius: 4px; font-weight: 700; font-size: 0.85em; }
+
+        .superset-exercise { background: rgba(30, 136, 229, 0.1); padding: 10px 12px; margin-bottom: 8px; border-left: 3px solid var(--jedi-accent); border-radius: 4px; }
+
+        .superset-exercise:last-child { margin-bottom: 0; }
+
+        .superset-exercise-name { font-weight: 600; color: var(--text-primary); margin-bottom: 3px; }
+
+        .superset-exercise-target { font-size: 0.8em; color: var(--text-secondary); }
+
+        .timer-section { background: rgba(30, 136, 229, 0.1); border: 2px solid var(--jedi-light-blue); padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 20px; }
+
+        .timer-display { font-size: 3em; font-weight: 700; color: var(--jedi-light-blue); font-family: 'Courier New', monospace; text-shadow: 0 0 15px rgba(30, 136, 229, 0.5); margin-bottom: 15px; letter-spacing: 2px; }
+
+        .timer-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+        .timer-btn {
+            padding: 10px 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .timer-btn-start { background: var(--success); color: white; }
+        .timer-btn-start:hover { box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4); }
+        .timer-btn-stop { background: var(--warning); color: white; }
+        .timer-btn-stop:hover { box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4); }
+        .timer-btn-reset { background: rgba(100, 181, 246, 0.2); color: var(--text-primary); border: 1px solid var(--jedi-light-blue); }
+
+        .sets-container { margin-bottom: 20px; }
+
+        .set-input-group {
+            background: rgba(15, 40, 71, 0.6);
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            border-left: 3px solid var(--jedi-accent);
+        }
+
+        .set-header { font-weight: 600; color: var(--jedi-light-blue); margin-bottom: 8px; font-size: 0.9em; }
+
+        .set-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+        .input-field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-field label { margin-bottom: 4px; font-size: 0.8em; }
+
+        .input-field input { margin-bottom: 0; padding: 8px; }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { box-shadow: 0 8px 24px rgba(76, 175, 80, 0.4); }
+
+        .charts-section { margin-top: 40px; }
+
+        .chart-container {
+            background: linear-gradient(135deg, rgba(30, 136, 229, 0.15) 0%, rgba(15, 40, 71, 0.5) 100%);
+            border: 1px solid rgba(100, 181, 246, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .chart-container h3 { color: var(--jedi-light-blue); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
+
+        .timeframe-buttons { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+
+        .timeframe-btn {
+            padding: 8px 16px;
+            background: rgba(100, 181, 246, 0.2);
+            color: var(--text-primary);
+            border: 1px solid rgba(100, 181, 246, 0.3);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .timeframe-btn.active { background: var(--jedi-blue); border-color: var(--jedi-light-blue); color: white; box-shadow: 0 4px 12px rgba(30, 136, 229, 0.4); }
+
+        @media (max-width: 768px) {
+            .main-content { grid-template-columns: 1fr; }
+            h1 { font-size: 1.8em; }
+            .container { padding: 15px; }
+        }
+
+        .exercise-list::-webkit-scrollbar { width: 6px; }
+        .exercise-list::-webkit-scrollbar-track { background: rgba(100, 181, 246, 0.1); border-radius: 3px; }
+        .exercise-list::-webkit-scrollbar-thumb { background: var(--jedi-blue); border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚡ Jedi Force Training ⚡</h1>
+            <p class="tagline">May the Force Be With Your Fitness Journey</p>
+        </header>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="card">
+                    <h2>Select Workout</h2>
+                    <div id="workoutButtons" style="max-height: 400px; overflow-y: auto;"></div>
+                </div>
+            </div>
+
+            <div class="main-area">
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('log')">Log Workout</button>
+                    <button class="tab-btn" onclick="switchTab('view')">View Workouts</button>
+                    <button class="tab-btn" onclick="switchTab('dashboard')">Dashboard</button>
+                </div>
+
+                <!-- Log Workout Tab -->
+                <div id="log-tab" class="tab-content active">
+                    <div class="card">
+                        <h2 id="logHeaderText" style="display: none;">Log Workout Session</h2>
+                        <form id="workoutForm" style="display: none;">
+                            <div style="margin-bottom: 20px;">
+                                <label>Workout:</label>
+                                <input type="text" id="selectedWorkout" readonly style="background: rgba(30, 136, 229, 0.05);">
+                            </div>
+
+                            <div class="timer-section">
+                                <div class="timer-display" id="timerDisplay">00:00:00</div>
+                                <div class="timer-buttons">
+                                    <button type="button" class="timer-btn timer-btn-start" id="timerStart" onclick="startTimer(event)">Start</button>
+                                    <button type="button" class="timer-btn timer-btn-stop" id="timerStop" onclick="stopTimer(event)" style="display: none;">Stop</button>
+                                    <button type="button" class="timer-btn timer-btn-reset" onclick="resetTimer(event)">Reset</button>
+                                </div>
+                            </div>
+
+                            <div style="margin-bottom: 20px;">
+                                <label>Duration (minutes):</label>
+                                <input type="number" id="duration" min="0" max="999" placeholder="Auto-filled from timer">
+                            </div>
+
+                            <div id="exerciseInputsContainer" style="margin-bottom: 20px;"></div>
+
+                            <div style="margin-bottom: 20px;">
+                                <label>Overall Difficulty (1-10):</label>
+                                <input type="range" id="difficulty" min="1" max="10" value="5" style="padding: 0; cursor: pointer;">
+                                <span id="difficultyValue" style="color: var(--jedi-light-blue); font-weight: bold;">5</span>
+                            </div>
+                            <button type="submit" class="btn btn-success">Save Workout Session</button>
+                        </form>
+
+                        <div id="noSelection" style="text-align: center; color: var(--text-secondary); padding: 40px;">
+                            <p style="font-size: 1.1em;">Select a workout from the left to begin</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- View Workouts Tab -->
+                <div id="view-tab" class="tab-content">
+                    <div class="card">
+                        <h2>Exercise Guide</h2>
+                        <div id="exerciseList" class="exercise-list" style="display: none;"></div>
+                        <div id="noViewSelection" style="text-align: center; color: var(--text-secondary); padding: 40px;">
+                            <p style="font-size: 1.1em;">Select a workout to view exercises</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dashboard Tab -->
+                <div id="dashboard-tab" class="tab-content">
+                    <div class="charts-section">
+                        <div class="chart-container">
+                            <h3>Workout Completion History</h3>
+                            <div class="timeframe-buttons">
+                                <button class="timeframe-btn active" onclick="updateDashboard('week')">Week</button>
+                                <button class="timeframe-btn" onclick="updateDashboard('month')">Month</button>
+                                <button class="timeframe-btn" onclick="updateDashboard('6months')">6 Months</button>
+                                <button class="timeframe-btn" onclick="updateDashboard('ytd')">YTD</button>
+                                <button class="timeframe-btn" onclick="updateDashboard('year')">1 Year</button>
+                            </div>
+                            <canvas id="completionChart"></canvas>
+                        </div>
+
+                        <div class="chart-container">
+                            <h3>Average Difficulty by Workout</h3>
+                            <canvas id="difficultyChart"></canvas>
+                        </div>
+
+                        <div class="chart-container">
+                            <h3>Total Volume by Workout</h3>
+                            <canvas id="volumeChart"></canvas>
+                        </div>
+
+                        <div class="chart-container">
+                            <h3>Completion Rate</h3>
+                            <canvas id="rateChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const workouts = {
+            'Upper Horizontal': {
+                name: 'Upper Horizontal',
+                exercises: [
+                    { name: 'Strider with rotation', sets: 1, reps: '5' },
+                    { name: 'Band Face Pull', sets: 2, reps: '10-15' },
+                    { name: 'DDA Band Pull Apart', sets: 2, reps: '10-15' },
+                    {
+                        isSuperSet: true,
+                        name: 'Super Set of 4',
+                        rounds: 4,
+                        exercises: [
+                            { name: 'Push ups', sets: 1, reps: '30 sec' },
+                            { name: 'DB Bench Press', sets: 1, reps: '8-12' }
+                        ]
+                    },
+                    { name: 'DB Single Arm Row', sets: 4, reps: '8-12' },
+                    { name: 'DB Supine Tricep Extensions', sets: 3, reps: '15-20' },
+                    { name: 'ECP Standing Dumbbell Bicep Curl', sets: 1, reps: '5 Min' },
+                    { name: 'Seated DB Lateral Raise', sets: 3, reps: '12-15' },
+                    { name: 'Toe Touch Abs', sets: 3, reps: '25' }
+                ]
+            },
+            'Lower Anterior': {
+                name: 'Lower Anterior',
+                exercises: [
+                    { name: 'Seal Jacks', sets: 1, reps: '30 sec' },
+                    { name: '1/2 Kneeling Hip Flexor Stretch', sets: 2, reps: '10-15' },
+                    { name: 'Elbow Plank', sets: 2, reps: '30 sec' },
+                    { name: 'Glute Bridge with heels into bench', sets: 2, reps: '10-15' },
+                    { name: 'Jump Squat', sets: 2, reps: '10-12' },
+                    { name: 'DB Goblet Squat', sets: 2, reps: '10-12' },
+                    { name: 'DB RDL', sets: 3, reps: '10-12' },
+                    { name: 'DB Cyclist Squat', sets: 3, reps: '12-15' },
+                    {
+                        isSuperSet: true,
+                        name: 'Super Set of 5',
+                        rounds: 5,
+                        exercises: [
+                            { name: 'Jump Rope', sets: 1, reps: '60 sec' },
+                            { name: 'Elbow Side Plank', sets: 1, reps: '20 sec/side' },
+                            { name: 'DB Dead Bug', sets: 1, reps: '8/side' }
+                        ]
+                    }
+                ]
+            },
+            'Lower Posterior': {
+                name: 'Lower Posterior',
+                exercises: [
+                    { name: 'Knees to Chest', sets: 1, reps: '60 sec' },
+                    { name: '1/2 Kneeling Hip Flexor Stretch', sets: 2, reps: '10-15' },
+                    {
+                        isSuperSet: true,
+                        name: 'Super Set of 2',
+                        rounds: 2,
+                        exercises: [
+                            { name: 'Med Ball Dead Bug', sets: 1, reps: 'per side' },
+                            { name: 'Glute Bridge w/ heels into bench', sets: 1, reps: '15' },
+                            { name: 'Body Weight Jump Squats', sets: 1, reps: '10' }
+                        ]
+                    },
+                    { name: 'Goblet Split Squat', sets: 4, reps: '8-10/side' },
+                    { name: 'Single Leg DB Hip Thrust', sets: 4, reps: '12-15/side' },
+                    { name: 'DB Curtsy LUnge', sets: 3, reps: '10-12/side' },
+                    { name: 'Hamstring Walkouts', sets: 3, reps: '30 sec' },
+                    {
+                        isSuperSet: true,
+                        name: 'Super Set of 4',
+                        rounds: 4,
+                        exercises: [
+                            { name: 'Jump Rope', sets: 1, reps: '50 sec' },
+                            { name: 'Elbow Plank', sets: 1, reps: '60 sec' },
+                            { name: 'Bear Plank', sets: 1, reps: '30 sec' }
+                        ]
+                    }
+                ]
+            },
+            'Upper Vertical': {
+                name: 'Upper Vertical',
+                exercises: [
+                    {
+                        isSuperSet: true,
+                        name: 'Super Set of 2',
+                        rounds: 2,
+                        exercises: [
+                            { name: 'Strider with rotation', sets: 1, reps: '10-15' },
+                            { name: 'Band Pull Apart', sets: 1, reps: '10' },
+                            { name: 'Yoga Push Ups', sets: 1, reps: '10' }
+                        ]
+                    },
+                    {
+                        isSuperSet: true,
+                        name: 'Super Set of 3',
+                        rounds: 3,
+                        exercises: [
+                            { name: 'Push Ups', sets: 1, reps: '30 sec' },
+                            { name: 'Alternating DB Floor Press', sets: 1, reps: '8-12/side' }
+                        ]
+                    },
+                    { name: 'DB Gorilla Row', sets: 3, reps: '12-15' },
+                    { name: '1/2 kneeling DB 1 Arm Overhead Press', sets: 3, reps: '8-10/side' },
+                    { name: '15 Minutes of Cardio', sets: 1, reps: 'varies' }
+                ]
+            },
+            'Execute Order 66': {
+                name: 'Execute Order 66',
+                exercises: [
+                    { name: 'Stretch', sets: 1, reps: 'varies' },
+                    {
+                        isSuperSet: true,
+                        name: 'Super Set of 6',
+                        rounds: 6,
+                        exercises: [
+                            { name: 'Single KB Side Lunge', sets: 1, reps: '6/side' },
+                            { name: 'Yoga Push Ups', sets: 1, reps: '6' },
+                            { name: 'KB Reverse Lunge', sets: 1, reps: '6/side' },
+                            { name: 'DB Gorilla Row', sets: 1, reps: '6' },
+                            { name: 'KB Goblet Squat', sets: 1, reps: '6' },
+                            { name: 'Elbow Plank', sets: 1, reps: '66 sec' }
+                        ]
+                    }
+                ]
+            },
+            'Push Strength': {
+                name: 'Push Strength',
+                exercises: [
+                    { name: 'DB Floor Press', sets: 4, reps: '6-8' },
+                    { name: 'DB Goblet Squat', sets: 4, reps: '6-8' },
+                    {
+                        isSuperSet: true,
+                        name: 'Super Set of 3',
+                        rounds: 3,
+                        exercises: [
+                            { name: 'Standing DB Shoulder Press', sets: 1, reps: '8-10' },
+                            { name: 'DB Split Squat', sets: 1, reps: '8-10' }
+                        ]
+                    },
+                    {
+                        isSuperSet: true,
+                        name: 'Super Set of 3',
+                        rounds: 3,
+                        exercises: [
+                            { name: 'Single Leg DB Glute Bridge', sets: 1, reps: '10-12' },
+                            { name: 'DB floor pullover', sets: 1, reps: '10-12' }
+                        ]
+                    },
+                    {
+                        isSuperSet: true,
+                        name: 'Super Set of 3',
+                        rounds: 3,
+                        exercises: [
+                            { name: 'DB Lying Tricep Extensions', sets: 1, reps: '10-12' },
+                            { name: 'DB Lateral Raise', sets: 1, reps: '12-15' }
+                        ]
+                    },
+                    {
+                        isSuperSet: true,
+                        name: 'Super Set of 5',
+                        rounds: 5,
+                        exercises: [
+                            { name: 'Jump Rope', sets: 1, reps: '30 sec' },
+                            { name: 'High Plank Shoulder Taps', sets: 1, reps: '30 sec' }
+                        ]
+                    }
+                ]
+            },
+            'Pull Strength': {
+                name: 'Pull Strength',
+                exercises: [
+                    { name: 'Chin Ups', sets: 3, reps: '6-10' },
+                    { name: 'DB Romanian Deadlift', sets: 3, reps: '8-10' },
+                    { name: 'DB Gorilla Row', sets: 3, reps: '8-10' },
+                    { name: 'Hanging Leg Raise', sets: 3, reps: '10-15' },
+                    {
+                        isSuperSet: true,
+                        name: 'Super Set of 3',
+                        rounds: 3,
+                        exercises: [
+                            { name: 'DB Alternating Hammer Curl', sets: 1, reps: '12-15' },
+                            { name: 'DB Hamstring Curl', sets: 1, reps: '12-15' }
+                        ]
+                    },
+                    {
+                        isSuperSet: true,
+                        name: 'Super Set of 1',
+                        rounds: 1,
+                        exercises: [
+                            { name: 'Strider w/ Rotation', sets: 1, reps: '10/side' },
+                            { name: 'Leg Swings', sets: 1, reps: '30 sec/side' },
+                            { name: 'High Knees', sets: 1, reps: '30 sec' },
+                            { name: 'Butt Kickers', sets: 1, reps: '30 sec' }
+                        ]
+                    },
+                    { name: '30 minute run', sets: 1, reps: 'varies' }
+                ]
+            },
+            'Push Functional': {
+                name: 'Push Functional',
+                exercises: [
+                    { name: 'Feet Elevated Pushups', sets: 3, reps: '10-12' },
+                    { name: 'Bulgarian Split Squat', sets: 3, reps: '10-12' },
+                    {
+                        isSuperSet: true,
+                        name: 'Super Set of 3',
+                        rounds: 3,
+                        exercises: [
+                            { name: 'Alternating DB Z Press', sets: 1, reps: '10-12' },
+                            { name: 'DB Wide Row', sets: 1, reps: '10-12' }
+                        ]
+                    },
+                    { name: 'DB Turkish Get Up', sets: 3, reps: '5/side' },
+                    {
+                        isSuperSet: true,
+                        name: 'Super Set of 3',
+                        rounds: 3,
+                        exercises: [
+                            { name: 'Floor DB Chest Fly', sets: 1, reps: '10-12' },
+                            { name: 'Adductor Plank', sets: 1, reps: '30 sec/side' },
+                            { name: 'Jump Rope', sets: 1, reps: '1 min' }
+                        ]
+                    }
+                ]
+            },
+            'Pull Functional': {
+                name: 'Pull Functional',
+                exercises: [
+                    { name: 'Pull Ups', sets: 4, reps: '8-12' },
+                    { name: 'Renegade Row', sets: 3, reps: '8-10' },
+                    { name: 'Dual DB Deadlift', sets: 3, reps: '8-10' },
+                    {
+                        isSuperSet: true,
+                        name: 'Super Set of 3',
+                        rounds: 3,
+                        exercises: [
+                            { name: 'DB Windmill', sets: 1, reps: '8-10/side' },
+                            { name: 'Lateral Bounds', sets: 1, reps: '5/side' }
+                        ]
+                    },
+                    { name: 'DB Arnold Shoulder Press', sets: 3, reps: '10-12' },
+                    { name: 'DB Cuban Rotations', sets: 3, reps: '12-15' },
+                    {
+                        isSuperSet: true,
+                        name: 'Super Set of 10',
+                        rounds: 10,
+                        exercises: [
+                            { name: 'Jump Squat', sets: 1, reps: '10 sec' },
+                            { name: 'Burpee', sets: 1, reps: '10 sec' },
+                            { name: 'Mountain Climber', sets: 1, reps: '10 sec' }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        let workoutData = [];
+        let currentWorkout = null;
+        let timerInterval = null;
+        let timerSeconds = 0;
+        let timerRunning = false;
+        let currentTimeframe = 'week';
+        let charts = {};
+
+        function init() {
+            loadWorkoutData();
+            renderWorkoutButtons();
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tab + '-tab').classList.add('active');
+            event.target.classList.add('active');
+
+            if (tab === 'dashboard') {
+                updateDashboard('week');
+            }
+        }
+
+        function renderWorkoutButtons() {
+            const container = document.getElementById('workoutButtons');
+            container.innerHTML = '';
+            
+            Object.values(workouts).forEach(workout => {
+                const btn = document.createElement('button');
+                btn.className = 'workout-btn';
+                btn.textContent = workout.name;
+                btn.onclick = (e) => selectWorkout(workout, e);
+                container.appendChild(btn);
+            });
+        }
+
+        function selectWorkout(workout, e) {
+            currentWorkout = workout;
+            document.getElementById('selectedWorkout').value = workout.name;
+            document.getElementById('workoutForm').style.display = 'block';
+            document.getElementById('logHeaderText').style.display = 'block';
+            document.getElementById('noSelection').style.display = 'none';
+            
+            document.getElementById('exerciseList').style.display = 'block';
+            document.getElementById('noViewSelection').style.display = 'none';
+
+            resetTimer();
+
+            document.querySelectorAll('.workout-btn').forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+
+            renderExercises();
+            renderExerciseInputs();
+        }
+
+        function renderExercises() {
+            const container = document.getElementById('exerciseList');
+            container.innerHTML = '';
+            
+            currentWorkout.exercises.forEach(item => {
+                if (item.isSuperSet) {
+                    const supersetDiv = document.createElement('div');
+                    supersetDiv.className = 'superset-group';
+                    
+                    const headerDiv = document.createElement('div');
+                    headerDiv.className = 'superset-header';
+                    headerDiv.innerHTML = `
+                        <div class="superset-icon">⚡</div>
+                        <div class="superset-title">${item.name}</div>
+                        <div class="superset-rounds">${item.rounds} Rounds</div>
+                    `;
+                    supersetDiv.appendChild(headerDiv);
+                    
+                    item.exercises.forEach(exercise => {
+                        const exDiv = document.createElement('div');
+                        exDiv.className = 'superset-exercise';
+                        exDiv.innerHTML = `
+                            <div class="superset-exercise-name">${exercise.name}</div>
+                            <div class="superset-exercise-target">${exercise.sets} set(s) x ${exercise.reps}</div>
+                        `;
+                        supersetDiv.appendChild(exDiv);
+                    });
+                    
+                    container.appendChild(supersetDiv);
+                } else {
+                    const div = document.createElement('div');
+                    div.className = 'exercise-item';
+                    div.innerHTML = `
+                        <div class="exercise-name">${item.name}</div>
+                        <div class="exercise-details">${item.sets} set(s) x ${item.reps}</div>
+                    `;
+                    container.appendChild(div);
+                }
+            });
+        }
+
+        function renderExerciseInputs() {
+            const container = document.getElementById('exerciseInputsContainer');
+            container.innerHTML = '';
+            
+            currentWorkout.exercises.forEach((item, index) => {
+                if (item.isSuperSet) {
+                    const supersetDiv = document.createElement('div');
+                    supersetDiv.className = 'superset-group';
+                    
+                    const headerDiv = document.createElement('div');
+                    headerDiv.className = 'superset-header';
+                    headerDiv.innerHTML = `
+                        <div class="superset-icon">⚡</div>
+                        <div class="superset-title">${item.name}</div>
+                        <div class="superset-rounds">${item.rounds} Rounds</div>
+                    `;
+                    supersetDiv.appendChild(headerDiv);
+                    
+                    item.exercises.forEach((exercise, exIndex) => {
+                        renderExerciseSetInputs(supersetDiv, exercise, index, exIndex, true);
+                    });
+                    
+                    container.appendChild(supersetDiv);
+                } else {
+                    const div = document.createElement('div');
+                    renderExerciseSetInputs(div, item, index, 0, false);
+                    container.appendChild(div);
+                }
+            });
+        }
+
+        function renderExerciseSetInputs(parent, exercise, index, exIndex, isSuperSet) {
+            const setsContainer = document.createElement('div');
+            setsContainer.className = isSuperSet ? 'sets-container' : 'exercise-input-section';
+            setsContainer.style.background = isSuperSet ? 'rgba(30, 136, 229, 0.05)' : 'rgba(15, 40, 71, 0.6)';
+            setsContainer.style.padding = '15px';
+            setsContainer.style.borderRadius = '8px';
+            setsContainer.style.marginBottom = isSuperSet ? '10px' : '15px';
+            setsContainer.style.borderLeft = isSuperSet ? '2px solid var(--jedi-accent)' : '3px solid var(--jedi-light-blue)';
+            
+            const title = document.createElement('div');
+            title.style.fontWeight = '600';
+            title.style.color = 'var(--jedi-light-blue)';
+            title.style.marginBottom = '10px';
+            title.style.fontSize = '0.95em';
+            title.textContent = exercise.name;
+            setsContainer.appendChild(title);
+
+            // For supersets, use rounds instead of sets
+            const iterations = isSuperSet ? currentWorkout.exercises[index].rounds : exercise.sets;
+            const iterationLabel = isSuperSet ? 'Round' : 'Set';
+
+            for (let set = 1; set <= iterations; set++) {
+                const setDiv = document.createElement('div');
+                setDiv.className = 'set-input-group';
+                
+                const setHeader = document.createElement('div');
+                setHeader.className = 'set-header';
+                setHeader.textContent = `${iterationLabel} ${set}`;
+                setDiv.appendChild(setHeader);
+
+                const inputsDiv = document.createElement('div');
+                inputsDiv.className = 'set-inputs';
+
+                const weightInput = document.createElement('div');
+                weightInput.className = 'input-field';
+                weightInput.innerHTML = `
+                    <label>Weight (lbs)</label>
+                    <input type="number" class="set-weight" data-index="${index}" data-ex="${exIndex}" data-set="${set}" min="0" max="999" placeholder="0" step="0.5">
+                `;
+                inputsDiv.appendChild(weightInput);
+
+                const repsInput = document.createElement('div');
+                repsInput.className = 'input-field';
+                repsInput.innerHTML = `
+                    <label>Reps</label>
+                    <input type="number" class="set-reps" data-index="${index}" data-ex="${exIndex}" data-set="${set}" min="0" max="999" placeholder="0">
+                `;
+                inputsDiv.appendChild(repsInput);
+
+                setDiv.appendChild(inputsDiv);
+                setsContainer.appendChild(setDiv);
+            }
+
+            parent.appendChild(setsContainer);
+        }
+
+        window.startTimer = function(e) {
+            e.preventDefault();
+            if (timerRunning) return;
+            timerRunning = true;
+            document.getElementById('timerStart').style.display = 'none';
+            document.getElementById('timerStop').style.display = 'inline-block';
+            
+            timerInterval = setInterval(() => {
+                timerSeconds++;
+                updateTimerDisplay();
+            }, 1000);
+        };
+
+        window.stopTimer = function(e) {
+            e.preventDefault();
+            timerRunning = false;
+            clearInterval(timerInterval);
+            document.getElementById('timerStart').style.display = 'inline-block';
+            document.getElementById('timerStop').style.display = 'none';
+            
+            const minutes = Math.floor(timerSeconds / 60);
+            document.getElementById('duration').value = minutes;
+        };
+
+        window.resetTimer = function(e) {
+            if (e) e.preventDefault();
+            timerRunning = false;
+            clearInterval(timerInterval);
+            timerSeconds = 0;
+            updateTimerDisplay();
+            document.getElementById('timerStart').style.display = 'inline-block';
+            document.getElementById('timerStop').style.display = 'none';
+            document.getElementById('duration').value = '';
+        };
+
+        function updateTimerDisplay() {
+            const hours = Math.floor(timerSeconds / 3600);
+            const minutes = Math.floor((timerSeconds % 3600) / 60);
+            const seconds = timerSeconds % 60;
+            const display = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            document.getElementById('timerDisplay').textContent = display;
+        }
+
+        document.getElementById('difficulty')?.addEventListener('input', function() {
+            document.getElementById('difficultyValue').textContent = this.value;
+        });
+
+        document.getElementById('workoutForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const exerciseData = [];
+            currentWorkout.exercises.forEach((item, index) => {
+                if (item.isSuperSet) {
+                    item.exercises.forEach((exercise, exIndex) => {
+                        const sets = [];
+                        for (let round = 1; round <= item.rounds; round++) {
+                            const weight = parseFloat(document.querySelector(`.set-weight[data-index="${index}"][data-ex="${exIndex}"][data-set="${round}"]`)?.value) || 0;
+                            const reps = parseInt(document.querySelector(`.set-reps[data-index="${index}"][data-ex="${exIndex}"][data-set="${round}"]`)?.value) || 0;
+                            sets.push({ round, weight, reps });
+                        }
+                        exerciseData.push({
+                            name: exercise.name,
+                            sets: sets,
+                            superSet: item.name,
+                            rounds: item.rounds
+                        });
+                    });
+                } else {
+                    const sets = [];
+                    for (let set = 1; set <= item.sets; set++) {
+                        const weight = parseFloat(document.querySelector(`.set-weight[data-index="${index}"][data-ex="0"][data-set="${set}"]`)?.value) || 0;
+                        const reps = parseInt(document.querySelector(`.set-reps[data-index="${index}"][data-ex="0"][data-set="${set}"]`)?.value) || 0;
+                        sets.push({ set, weight, reps });
+                    }
+                    exerciseData.push({
+                        name: item.name,
+                        sets: sets
+                    });
+                }
+            });
+            
+            const session = {
+                date: new Date().toISOString(),
+                workout: document.getElementById('selectedWorkout').value,
+                duration: parseInt(document.getElementById('duration').value) || 0,
+                difficulty: parseInt(document.getElementById('difficulty').value),
+                exercises: exerciseData
+            };
+
+            workoutData.push(session);
+            saveWorkoutData();
+            
+            alert(`✓ Workout logged! Duration: ${session.duration}min | Difficulty: ${session.difficulty}/10`);
+            
+            this.reset();
+            document.getElementById('difficulty').value = 5;
+            document.getElementById('difficultyValue').textContent = '5';
+            resetTimer();
+            renderExerciseInputs();
+        });
+
+        window.updateDashboard = function(timeframe) {
+            currentTimeframe = timeframe;
+            
+            document.querySelectorAll('.timeframe-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            updateCompletionChart();
+            updateDifficultyChart();
+            updateVolumeChart();
+            updateRateChart();
+        };
+
+        function getFilteredData() {
+            const now = new Date();
+            let startDate = new Date();
+            
+            switch(currentTimeframe) {
+                case 'week':
+                    startDate.setDate(now.getDate() - 7);
+                    break;
+                case 'month':
+                    startDate.setMonth(now.getMonth() - 1);
+                    break;
+                case '6months':
+                    startDate.setMonth(now.getMonth() - 6);
+                    break;
+                case 'ytd':
+                    startDate = new Date(now.getFullYear(), 0, 1);
+                    break;
+                case 'year':
+                    startDate.setFullYear(now.getFullYear() - 1);
+                    break;
+            }
+            
+            return workoutData.filter(session => new Date(session.date) >= startDate);
+        }
+
+        function updateCompletionChart() {
+            const filtered = getFilteredData();
+            const workoutCounts = {};
+            
+            filtered.forEach(session => {
+                workoutCounts[session.workout] = (workoutCounts[session.workout] || 0) + 1;
+            });
+
+            const ctx = document.getElementById('completionChart')?.getContext('2d');
+            if (!ctx) return;
+
+            if (charts.completion) charts.completion.destroy();
+
+            charts.completion = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(workoutCounts),
+                    datasets: [{
+                        label: 'Completions',
+                        data: Object.values(workoutCounts),
+                        backgroundColor: '#42a5f5',
+                        borderColor: '#1e88e5',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { labels: { color: 'var(--text-primary)' } } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: 'var(--text-secondary)' },
+                            grid: { color: 'rgba(100, 181, 246, 0.1)' }
+                        },
+                        x: { ticks: { color: 'var(--text-secondary)' }, grid: { color: 'rgba(100, 181, 246, 0.1)' } }
+                    }
+                }
+            });
+        }
+
+        function updateDifficultyChart() {
+            const filtered = getFilteredData();
+            const diffByWorkout = {};
+            const countByWorkout = {};
+            
+            filtered.forEach(session => {
+                if (!diffByWorkout[session.workout]) {
+                    diffByWorkout[session.workout] = 0;
+                    countByWorkout[session.workout] = 0;
+                }
+                diffByWorkout[session.workout] += session.difficulty;
+                countByWorkout[session.workout]++;
+            });
+
+            const avgDiff = Object.keys(diffByWorkout).map(w => (diffByWorkout[w] / countByWorkout[w]).toFixed(1));
+
+            const ctx = document.getElementById('difficultyChart')?.getContext('2d');
+            if (!ctx) return;
+
+            if (charts.difficulty) charts.difficulty.destroy();
+
+            charts.difficulty = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: Object.keys(diffByWorkout),
+                    datasets: [{
+                        label: 'Avg Difficulty',
+                        data: avgDiff,
+                        borderColor: '#1e88e5',
+                        backgroundColor: 'rgba(30, 136, 229, 0.2)',
+                        pointBackgroundColor: '#64b5f6',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 10,
+                            ticks: { color: 'var(--text-secondary)' },
+                            grid: { color: 'rgba(100, 181, 246, 0.1)' }
+                        }
+                    },
+                    plugins: { legend: { labels: { color: 'var(--text-primary)' } } }
+                }
+            });
+        }
+
+        function updateVolumeChart() {
+            const filtered = getFilteredData();
+            const volumeByWorkout = {};
+            
+            filtered.forEach(session => {
+                let totalVolume = 0;
+                session.exercises.forEach(ex => {
+                    ex.sets.forEach(s => {
+                        totalVolume += (s.weight * s.reps);
+                    });
+                });
+                volumeByWorkout[session.workout] = (volumeByWorkout[session.workout] || 0) + totalVolume;
+            });
+
+            const ctx = document.getElementById('volumeChart')?.getContext('2d');
+            if (!ctx) return;
+
+            if (charts.volume) charts.volume.destroy();
+
+            charts.volume = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(volumeByWorkout),
+                    datasets: [{
+                        data: Object.values(volumeByWorkout),
+                        backgroundColor: ['#42a5f5', '#1e88e5', '#64b5f6', '#ffd700', '#4caf50', '#ff9800', '#e91e63', '#9c27b0', '#00bcd4'],
+                        borderColor: '#0a1628',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { labels: { color: 'var(--text-primary)' } } }
+                }
+            });
+        }
+
+        function updateRateChart() {
+            const filtered = getFilteredData();
+            const total = filtered.length;
+            const completed = filtered.filter(s => s.duration > 0 && s.exercises.length > 0).length;
+
+            const ctx = document.getElementById('rateChart')?.getContext('2d');
+            if (!ctx) return;
+
+            if (charts.rate) charts.rate.destroy();
+
+            charts.rate = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Completed', 'Pending'],
+                    datasets: [{
+                        data: [completed, Math.max(0, total - completed)],
+                        backgroundColor: ['#4caf50', 'rgba(100, 181, 246, 0.2)'],
+                        borderColor: ['#4caf50', 'rgba(100, 181, 246, 0.3)'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { labels: { color: 'var(--text-primary)' } } }
+                }
+            });
+        }
+
+        function saveWorkoutData() {
+            localStorage.setItem('jediForceWorkouts', JSON.stringify(workoutData));
+        }
+
+        function loadWorkoutData() {
+            const saved = localStorage.getItem('jediForceWorkouts');
+            if (saved) {
+                workoutData = JSON.parse(saved);
+            }
+        }
+
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
