@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Jedi Force Training Datapad</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://apis.google.com/js/api.js" async defer></script>
@@ -19,7 +19,6 @@
             --imperial-glow: rgba(255, 51, 51, 0.5);
         }
 
-        /* Order 66 Theme Variant */
         body.order-66 {
             --jedi-blue: var(--imperial-red);
             --jedi-glow: var(--imperial-glow);
@@ -31,20 +30,19 @@
             background-color: var(--datapad-bg);
             color: var(--text-main);
             font-family: 'Courier New', Courier, monospace;
-            padding: 15px;
+            padding: 10px;
             background-image: 
                 linear-gradient(rgba(12, 15, 18, 0.95), rgba(12, 15, 18, 0.95)),
                 radial-gradient(circle at 20% 30%, #1e2530 1px, transparent 1px),
                 radial-gradient(circle at 75% 60%, #1e2530 2px, transparent 2px);
             background-size: 100% 100%, 20px 20px, 30px 30px;
-            font-size: 18px; /* High visibility scaling */
+            font-size: 18px;
         }
 
-        /* Datapad Frame & Greebles */
         .datapad-container {
-            max-width: 600px;
+            max-width: 100%;
             margin: 0 auto;
-            border: 4px solid #3a4659;
+            border: 3px solid #3a4659;
             border-radius: 12px;
             background: var(--panel-bg);
             box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 0 15px rgba(0,0,0,0.5);
@@ -52,21 +50,10 @@
             overflow: hidden;
         }
 
-        .datapad-container::before {
-            content: "DATAPAD V4.66";
-            position: absolute;
-            top: 2px;
-            right: 15px;
-            font-size: 11px;
-            color: #566985;
-            letter-spacing: 1px;
-        }
-
         .datapad-header {
             background: #1c232e;
             padding: 15px;
             border-bottom: 3px solid var(--jedi-blue);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -76,25 +63,23 @@
             color: var(--jedi-blue);
             text-transform: uppercase;
             font-weight: bold;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             text-shadow: 0 0 8px var(--jedi-glow);
-            font-size: 22px;
+            font-size: 20px;
         }
 
         .rank-badge {
-            font-size: 15px;
+            font-size: 14px;
             background: #0c0f12;
             padding: 6px 10px;
             border: 1px solid var(--jedi-blue);
             border-radius: 4px;
             color: var(--jedi-blue);
-            text-shadow: 0 0 4px var(--jedi-glow);
             font-weight: bold;
         }
 
-        /* Interface Panels */
         .panel {
-            padding: 20px;
+            padding: 15px;
             border-bottom: 1px solid #242c37;
         }
 
@@ -103,8 +88,8 @@
             justify-content: space-between;
             align-items: center;
             background: #0e1217;
-            padding: 10px 15px;
-            font-size: 14px;
+            padding: 12px 15px;
+            font-size: 13px;
             border-bottom: 1px dashed #3a4659;
         }
 
@@ -112,51 +97,38 @@
             background: #1c232e;
             color: var(--jedi-blue);
             border: 1px solid var(--jedi-blue);
-            padding: 10px 16px; /* Enhanced tap targeting */
+            padding: 12px 18px; /* Large mobile thumb friendly target */
             font-family: inherit;
             cursor: pointer;
             text-transform: uppercase;
-            font-size: 15px;
+            font-size: 14px;
             transition: all 0.2s ease;
-            box-shadow: 0 0 4px var(--jedi-glow);
             font-weight: bold;
+            border-radius: 6px;
         }
 
-        .btn-jedi:hover {
-            background: var(--jedi-blue);
-            color: #0c0f12;
-            box-shadow: 0 0 12px var(--jedi-blue);
-        }
-
-        /* Stats Bar */
         .stats-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 10px;
             background: #0e1217;
-            padding: 15px;
+            padding: 12px;
             border-radius: 6px;
-            border: 1px solid #242c37;
         }
 
-        .stat-box {
-            text-align: center;
-        }
         .stat-val {
-            font-size: 28px;
+            font-size: 26px;
             color: var(--jedi-blue);
-            text-shadow: 0 0 6px var(--jedi-glow);
             font-weight: bold;
         }
-        .stat-lbl { font-size: 13px; color: #788ba6; text-transform: uppercase; }
 
-        /* Workout Selector HUD Row - Fixed Mobile Carousel */
+        .stat-lbl { font-size: 12px; color: #788ba6; text-transform: uppercase; }
+
         .workout-nav {
             display: flex;
             gap: 10px;
             overflow-x: auto;
-            overflow-y: hidden;
-            padding: 12px 5px;
+            padding: 10px 0;
             -webkit-overflow-scrolling: touch;
             width: 100%;
         }
@@ -165,112 +137,108 @@
             background: #10141a;
             border: 1px solid #2d3745;
             color: #788ba6;
-            padding: 12px 20px;
-            font-size: 15px;
+            padding: 12px 18px;
+            font-size: 14px;
             white-space: nowrap;
             cursor: pointer;
             text-transform: uppercase;
             font-weight: bold;
-            flex-shrink: 0; /* Locked width constraint */
+            flex-shrink: 0;
             border-radius: 4px;
         }
         .nav-tab.active {
             border-color: var(--jedi-blue);
             color: var(--jedi-blue);
             background: #1c232e;
-            text-shadow: 0 0 4px var(--jedi-glow);
         }
 
-        /* Exercise Card Customization */
         .exercise-card {
             background: #11161d;
             border-left: 5px solid var(--jedi-blue);
-            padding: 15px;
+            padding: 12px;
             margin-bottom: 15px;
-            border-radius: 0 6px 6px 0;
+            border-radius: 6px;
         }
         .exercise-title {
-            font-size: 17px;
+            font-size: 16px;
             color: var(--jedi-blue);
             margin-bottom: 12px;
             text-transform: uppercase;
             font-weight: bold;
-            line-height: 1.3;
         }
 
+        /* Mobile Rep Grid Redesign */
         .set-row {
             display: grid;
-            grid-template-columns: 70px 1fr 1fr;
-            gap: 12px;
+            grid-template-columns: 55px 1fr 1fr;
+            gap: 10px;
             align-items: center;
             margin-bottom: 10px;
         }
-        .set-label { font-size: 14px; color: #788ba6; font-weight: bold; }
+        .set-label { font-size: 13px; color: #788ba6; font-weight: bold; }
         
-        input[type="number"] {
+        /* Tactical Big Input Fields */
+        input[type="number"], input[type="text"] {
             background: #07090c;
-            border: 1px solid #242c37;
+            border: 1px solid #3a4659;
             color: #fff;
-            padding: 8px;
+            padding: 12px 5px; /* Huge vertical touch zone */
             font-family: inherit;
             text-align: center;
-            border-radius: 4px;
-            font-size: 16px;
+            border-radius: 6px;
+            font-size: 18px; /* Stops iOS from auto-zooming screen structure */
+            width: 100%;
+            font-weight: bold;
+            -webkit-appearance: none; /* Strip standard apple formatting */
         }
         input[type="number"]:focus {
             outline: none;
             border-color: var(--jedi-blue);
-            box-shadow: 0 0 5px var(--jedi-glow);
         }
 
-        /* Chronometer UI Display */
         .timer-container {
             background: #090c10;
             border: 1px solid var(--jedi-blue);
-            padding: 20px;
+            padding: 15px;
             text-align: center;
-            margin-top: 15px;
-            position: relative;
+            margin-top: 10px;
         }
         .timer-display {
-            font-size: 46px;
+            font-size: 40px;
             color: var(--jedi-blue);
-            text-shadow: 0 0 10px var(--jedi-glow);
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
-        #yt-player-container {
-            display: none;
-        }
+        #yt-player-container { display: none; }
     </style>
 </head>
 <body>
 
-<div class="datapad-container">
+<div class="datapad-container" onclick="wakeAudioEngine()">
     
     <div class="auth-bar">
-        <span id="sync-status">DATAPAD SYNC: OFFLINE (LOCAL STORAGE)</span>
-        <button class="btn-jedi" id="auth-btn" onclick="handleAuthClick()">Link Drive</button>
+        <span id="sync-status">DATAPAD SYNC: OFFLINE (LOCAL)</span>
+        <button class="btn-jedi" style="padding: 6px 12px; font-size: 12px;" id="auth-btn" onclick="handleAuthClick()">Link Drive</button>
     </div>
 
     <div class="datapad-header">
         <div>
             <div class="hud-title" id="app-title">Jedi Holocron</div>
-            <div style="font-size: 12px; color: #788ba6; margin-top: 2px;">SYSTEM STATUS: NOMINAL</div>
+            <div style="font-size: 11px; color: #788ba6;">COMMS STATUS: LINKED</div>
         </div>
-        <div class="rank-badge" id="jedi-rank">RANK: INITIATE</div>
+        <div class="rank-badge" id="jedi-rank">INITIATE</div>
     </div>
 
     <div class="panel">
         <div class="stats-grid">
-            <div class="stat-box">
+            <div class="stat-box" style="text-align: center;">
                 <div class="stat-val" id="streak-count">0</div>
-                <div class="stat-lbl">Force Streak (Days)</div>
+                <div class="stat-lbl">Streak</div>
             </div>
-            <div class="stat-box">
+            <div class="stat-box" style="text-align: center;">
                 <div class="stat-val" id="total-logs">0</div>
-                <div class="stat-lbl">Holocron Records</div>
+                <div class="stat-lbl">Records</div>
             </div>
         </div>
     </div>
@@ -281,28 +249,24 @@
 
     <div class="panel" id="exercise-workspace"></div>
 
-    <div class="panel" style="display: flex; justify-content: space-between; align-items: center;">
-        <button class="btn-jedi" onclick="triggerAudioCue('click')">Test Comms</button>
-        <button class="btn-jedi" style="background: rgba(0,240,255,0.1);" onclick="saveCurrentWorkout()">Commit to Holocron</button>
+    <div class="panel" style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+        <button class="btn-jedi" style="flex: 1;" onclick="triggerAudioCue('click')">Test Comms</button>
+        <button class="btn-jedi" style="flex: 2; background: rgba(0,240,255,0.1);" onclick="saveCurrentWorkout()">Commit Log</button>
     </div>
 
     <div class="timer-container" id="global-timer-panel">
-        <div style="font-size: 12px; color: #788ba6; text-transform: uppercase; margin-bottom: 6px;">Chronometer Modulate</div>
         <div class="timer-display" id="timer-time">00:00</div>
         <div style="display: flex; justify-content: center; gap: 12px;">
-            <button class="btn-jedi" style="font-size:12px; padding:6px 12px;" onclick="startTimer()">Engage</button>
-            <button class="btn-jedi" style="font-size:12px; padding:6px 12px;" onclick="resetTimer()">Reset</button>
+            <button class="btn-jedi" style="font-size:13px; padding:8px 16px;" onclick="startTimer()">Engage</button>
+            <button class="btn-jedi" style="font-size:13px; padding:8px 16px;" onclick="resetTimer()">Reset</button>
         </div>
     </div>
 
 </div>
 
-<div id="yt-player-container">
-    <div id="inline-audio-node"></div>
-</div>
+<div id="yt-player-container"><div id="inline-audio-node"></div></div>
 
 <script>
-    // Configuration Definitions
     const GOOGLE_CLIENT_ID = '1012052270218-vopkhnc3o37312a0eko2iruqp1tjhn0v.apps.googleusercontent.com'; 
     const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest';
     const SCOPES = 'https://www.googleapis.com/auth/drive.file';
@@ -311,21 +275,14 @@
     let gapiInited = false;
     let gsiInited = false;
     let driveFileId = null;
+    let audioContextWoken = false;
 
-    // Local Tracking Engine State Variables
-    let appState = {
-        streak: 0,
-        totalWorkouts: 0,
-        lastLoggedDate: null,
-        history: []
-    };
-
+    let appState = { streak: 0, totalWorkouts: 0, lastLoggedDate: null, history: [] };
     let activeDay = 1;
     let countdownInterval;
     let timerSeconds = 0;
     let ytPlayer;
 
-    // Database Payload Mapping of All 9 Routines + Meditation Module
     const routines = {
         1: {
             name: "Day 1: Upper Horizontal",
@@ -337,7 +294,7 @@
                 { id: "d1_ss_bench", name: "[SUPERSET] DB Bench Press", sets: 4, targetReps: "8-12 reps (+ 30s Pushups)" },
                 { id: "d1_armrow", name: "DB Single Arm Row", sets: 4, targetReps: "8-12 reps" },
                 { id: "d1_tricep", name: "DB Supine Tricep Extensions", sets: 3, targetReps: "15-20 reps" },
-                { id: "d1_curl", name: "ECP Standing DB Bicep Curl", sets: 1, targetReps: "5 Min Time Under Tension" },
+                { id: "d1_curl", name: "ECP Standing DB Bicep Curl", sets: 1, targetReps: "5 Min TUT" },
                 { id: "d1_latraise", name: "Seated DB Lateral Raise", sets: 3, targetReps: "12-15 reps" },
                 { id: "d1_toe_touch", name: "Toe Touch Abs", sets: 3, targetReps: "25 reps" }
             ]
@@ -347,9 +304,9 @@
             isOrder66: false,
             exercises: [
                 { id: "d2_seal_jacks", name: "Seal Jacks", sets: 1, targetReps: "30 seconds" },
-                { id: "d2_hip_stretch", name: "1/2 Kneeling Hip Flexor Stretch", sets: 2, targetReps: "10-15 reps" },
+                { id: "d2_hip_stretch", name: "1/2 Kneeling Hip Stretch", sets: 2, targetReps: "10-15 reps" },
                 { id: "d2_plank", name: "Elbow Plank", sets: 2, targetReps: "30 sec" },
-                { id: "d2_glute_bridge", name: "Glute Bridge (heels into bench)", sets: 2, targetReps: "10-15 reps" },
+                { id: "d2_glute_bridge", name: "Glute Bridge (bench)", sets: 2, targetReps: "10-15 reps" },
                 { id: "d2_jump_squat", name: "Jump Squat", sets: 2, targetReps: "10-12 reps" },
                 { id: "d2_goblet", name: "DB Goblet Squat", sets: 2, targetReps: "10-12 reps" },
                 { id: "d2_rdl", name: "DB RDL", sets: 3, targetReps: "10-12 reps" },
@@ -362,12 +319,12 @@
             isOrder66: false,
             exercises: [
                 { id: "d3_knees_chest", name: "Knees to Chest", sets: 1, targetReps: "60 seconds" },
-                { id: "d3_hip_stretch", name: "1/2 Kneeling Hip Flexor Stretch", sets: 2, targetReps: "10-15 reps" },
+                { id: "d3_hip_stretch", name: "1/2 Kneeling Hip Stretch", sets: 2, targetReps: "10-15 reps" },
                 { id: "d3_ss_warmup", name: "[SUPERSET] Med Ball Dead Bug / Glute Bridge / BW Jump Squats", sets: 2, targetReps: "Rep/side | 15 reps | 10 reps" },
                 { id: "d3_split_squat", name: "Goblet Split Squat", sets: 4, targetReps: "8-10 reps per side" },
-                { id: "d3_hip_thrust", name: "Single Leg DB Hip Thrust", sets: 4, targetReps: "12-15 reps per side" },
-                { id: "d3_curtsy", name: "DB Curtsy Lunge", sets: 3, targetReps: "10-12 reps per side" },
-                { id: "d3_walkouts", name: "Hamstring Walkouts", sets: 3, targetReps: "30 sec hold/reps" },
+                { id: "d3_hip_thrust", name: "Single Leg DB Hip Thrust", sets: 4, targetReps: "12-15 per side" },
+                { id: "d3_curtsy", name: "DB Curtsy Lunge", sets: 3, targetReps: "10-12 per side" },
+                { id: "d3_walkouts", name: "Hamstring Walkouts", sets: 3, targetReps: "30 sec hold" },
                 { id: "d3_ss_finisher", name: "[SUPERSET] Jump Rope / Elbow Plank / Bear Plank", sets: 4, targetReps: "50s | 60s | 30s" }
             ]
         },
@@ -376,9 +333,9 @@
             isOrder66: false,
             exercises: [
                 { id: "d4_ss_warmup", name: "[SUPERSET] Strider w/ Rotation / Band Pull Apart / Yoga Push Ups", sets: 2, targetReps: "10-15 reps | 10 reps | 10 reps" },
-                { id: "d4_ss_press", name: "[SUPERSET] Push Ups / Alternating DB Floor Press", sets: 3, targetReps: "30s | 8-12 reps per side" },
+                { id: "d4_ss_press", name: "[SUPERSET] Push Ups / Alternating DB Floor Press", sets: 3, targetReps: "30s | 8-12 per side" },
                 { id: "d4_gorilla", name: "DB Gorilla Row", sets: 3, targetReps: "12-15 reps" },
-                { id: "d4_ohp", name: "1/2 Kneeling DB 1 Arm Overhead Press", sets: 3, targetReps: "8-10 reps per side" },
+                { id: "d4_ohp", name: "1/2 Kneeling DB 1 Arm Overhead Press", sets: 3, targetReps: "8-10 per side" },
                 { id: "d4_cardio", name: "Sustained Cardio Engine", sets: 1, targetReps: "15 Minutes" }
             ]
         },
@@ -386,10 +343,10 @@
             name: "Day 5: Execute Order 66",
             isOrder66: true,
             exercises: [
-                { id: "o66_stretch", name: "Mandatory Fleet Mobilization Stretch", sets: 1, targetReps: "Focus on Mobility" },
-                { id: "o66_side_lunge", name: "[66 PROTOCOL] Single KB Side Lunge", sets: 6, targetReps: "6 reps per side" },
+                { id: "o66_stretch", name: "Mandatory Mobilization Stretch", sets: 1, targetReps: "Mobility Focus" },
+                { id: "o66_side_lunge", name: "[66 PROTOCOL] Single KB Side Lunge", sets: 6, targetReps: "6 per side" },
                 { id: "o66_yoga_push", name: "[66 PROTOCOL] Yoga Push Ups", sets: 6, targetReps: "6 reps" },
-                { id: "o66_rev_lunge", name: "[66 PROTOCOL] KB Reverse Lunge", sets: 6, targetReps: "6 reps per side" },
+                { id: "o66_rev_lunge", name: "[66 PROTOCOL] KB Reverse Lunge", sets: 6, targetReps: "6 per side" },
                 { id: "o66_gorilla", name: "[66 PROTOCOL] DB Gorilla Row", sets: 6, targetReps: "6 reps" },
                 { id: "o66_goblet", name: "[66 PROTOCOL] KB Goblet Squat", sets: 6, targetReps: "6 reps" },
                 { id: "o66_plank", name: "[66 PROTOCOL] Static Elbow Plank", sets: 6, targetReps: "66 Seconds" }
@@ -404,7 +361,7 @@
                 { id: "d6_ss_shoulder", name: "[SUPERSET] Standing DB Shoulder Press / DB Split Squat", sets: 3, targetReps: "8-10 reps | 8-10 reps" },
                 { id: "d6_ss_bridge", name: "[SUPERSET] Single Leg DB Glute Bridge / DB Floor Pullover", sets: 3, targetReps: "10-12 reps | 10-12 reps" },
                 { id: "d6_ss_arms", name: "[SUPERSET] DB Lying Tricep Extensions / DB Lateral Raise", sets: 3, targetReps: "10-12 reps | 12-15 reps" },
-                { id: "d6_ss_conditioning", name: "[SUPERSET] Jump Rope / High Plank Shoulder Taps", sets: 5, targetReps: "30 seconds | 30 seconds" }
+                { id: "d6_ss_conditioning", name: "[SUPERSET] Jump Rope / High Plank Shoulder Taps", sets: 5, targetReps: "30 sec | 30 sec" }
             ]
         },
         7: {
@@ -416,7 +373,7 @@
                 { id: "d7_gorilla", name: "DB Gorilla Row", sets: 3, targetReps: "8-10 reps" },
                 { id: "d7_leg_raise", name: "Hanging Leg Raise", sets: 3, targetReps: "10-15 reps" },
                 { id: "d7_ss_curls", name: "[SUPERSET] DB Alternating Hammer Curl / DB Hamstring Curl", sets: 3, targetReps: "12-15 reps | 12-15 reps" },
-                { id: "d7_ss_warmup", name: "[SUPERSET] Strider w/ Rotation / Leg Swings / High Knees / Butt Kickers", sets: 1, targetReps: "10/side | 30s/side | 30s | 30s" },
+                { id: "d7_ss_warmup", name: "[SUPERSET] Strider / Leg Swings / High Knees / Butt Kickers", sets: 1, targetReps: "10/side | 30s/side | 30s | 30s" },
                 { id: "d7_run", name: "Sustained Sector Run", sets: 1, targetReps: "30 Minutes" }
             ]
         },
@@ -438,20 +395,15 @@
                 { id: "d9_pull_ups", name: "Pull Ups", sets: 4, targetReps: "8-12 reps" },
                 { id: "d9_renegade", name: "Renegade Row", sets: 3, targetReps: "8-10 reps" },
                 { id: "d9_deadlift", name: "Dual DB Deadlift", sets: 3, targetReps: "8-10 reps" },
-                { id: "d9_ss_windmill", name: "[SUPERSET] DB Windmill / Lateral Bounds", sets: 3, targetReps: "8-10 per side | 5 per side" },
+                { id: "d9_ss_windmill", name: "[SUPERSET] DB Windmill / Lateral Bounds", sets: 3, targetReps: "8-10 side | 5 side" },
                 { id: "d9_arnold", name: "DB Arnold Shoulder Press", sets: 3, targetReps: "10-12 reps" },
                 { id: "d9_cuban", name: "DB Cuban Rotations", sets: 3, targetReps: "12-15 reps" },
                 { id: "d9_ss_hell", name: "[10-ROUND FINISHER] Jump Squat / Burpee / Mountain Climber", sets: 10, targetReps: "10s | 10s | 10s" }
             ]
         },
-        0: {
-            name: "Rest, Reflect & Meditate",
-            isMeditation: true,
-            exercises: []
-        }
+        0: { name: "Rest, Reflect & Meditate", isMeditation: true, exercises: [] }
     };
 
-    // Initialization Sequence
     window.addEventListener('DOMContentLoaded', () => {
         loadLocalState();
         generateNavigationTabs();
@@ -460,12 +412,16 @@
         initYouTubePlayerEngine();
     });
 
+    function wakeAudioEngine() {
+        if (!audioContextWoken) {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            audioCtx.resume().then(() => { audioContextWoken = true; });
+        }
+    }
+
     function loadLocalState() {
         const data = localStorage.getItem('jedi_datapad_state');
-        if (data) {
-            appState = JSON.parse(data);
-            updateDashboardMetrics();
-        }
+        if (data) { appState = JSON.parse(data); updateDashboardMetrics(); }
     }
 
     function saveLocalStorageState() {
@@ -476,34 +432,22 @@
     function updateDashboardMetrics() {
         document.getElementById('streak-count').innerText = appState.streak || 0;
         document.getElementById('total-logs').innerText = appState.totalWorkouts || 0;
-        
         let rank = "INITIATE";
         const total = appState.totalWorkouts || 0;
-        if (total > 250) rank = "JEDI MASTER";
-        else if (total > 80) rank = "JEDI KNIGHT";
+        if (total > 250) rank = "MASTER";
+        else if (total > 80) rank = "KNIGHT";
         else if (total > 20) rank = "PADAWAN";
-        
-        document.getElementById('jedi-rank').innerText = `RANK: ${rank}`;
+        document.getElementById('jedi-rank').innerText = rank;
     }
 
-    // Generate Scrollable HUD Module Bar
     function generateNavigationTabs() {
         const tabContainer = document.getElementById('workout-tabs');
         tabContainer.innerHTML = ''; 
-        
         Object.keys(routines).forEach(key => {
             let dayId = parseInt(key);
             let tab = document.createElement('div');
             tab.className = `nav-tab ${activeDay === dayId ? 'active' : ''}`;
-            
-            if (dayId === 0) {
-                tab.innerText = "Meditation";
-            } else if (dayId === 5) {
-                tab.innerText = "⚠️ ORDER 66";
-            } else {
-                tab.innerText = `Day ${dayId}`;
-            }
-            
+            tab.innerText = dayId === 0 ? "Meditation" : (dayId === 5 ? "⚠️ ORDER 66" : `Day ${dayId}`);
             tab.onclick = (e) => {
                 document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
                 e.target.classList.add('active');
@@ -513,101 +457,79 @@
         });
     }
 
-    function switchWorkout(dayNum) {
-        activeDay = dayNum;
-        renderWorkspace();
-        triggerAudioCue('beep');
-    }
+    function switchWorkout(dayNum) { activeDay = dayNum; renderWorkspace(); triggerAudioCue('beep'); }
 
-    // Dynamic Module Painting Layout
     function renderWorkspace() {
         const workspace = document.getElementById('exercise-workspace');
         const config = routines[activeDay];
         
         if(config.isOrder66) {
             document.body.classList.add('order-66');
-            document.getElementById('app-title').innerText = "EMPIRE PROTOCOL 66";
-            timerSeconds = 66; 
-            updateTimerDisplay();
+            document.getElementById('app-title').innerText = "PROTOCOL 66";
+            timerSeconds = 66; updateTimerDisplay();
         } else {
             document.body.classList.remove('order-66');
             document.getElementById('app-title').innerText = "Jedi Holocron";
         }
 
-        workspace.innerHTML = `<h3 style="color:var(--jedi-blue); margin-bottom:15px; font-size:16px; text-transform:uppercase; font-weight:bold;">${config.name}</h3>`;
+        workspace.innerHTML = `<h3 style="color:var(--jedi-blue); margin-bottom:12px; font-size:16px; text-transform:uppercase;">${config.name}</h3>`;
 
         if(config.isMeditation) {
             workspace.innerHTML += `
-                <div style="text-align:center; padding:20px 0;">
-                    <p style="font-size:16px; margin-bottom:15px; color:#788ba6;">Clear your mind. Align your connection to the Force.</p>
-                    <button class="btn-jedi" onclick="setupMeditationSession()">Initialize 30m Meditation</button>
-                </div>
-            `;
+                <div style="text-align:center; padding:15px 0;">
+                    <p style="font-size:15px; margin-bottom:15px; color:#788ba6;">Align your connection to the Force.</p>
+                    <button class="btn-jedi" onclick="setupMeditationSession()">Begin 30m Meditation</button>
+                </div>`;
             return;
         }
 
         config.exercises.forEach(ex => {
             let card = document.createElement('div');
             card.className = 'exercise-card';
-            
-            let cardHeader = `
-                <div class="exercise-title">${ex.name} <span style="font-size:12px; color:#566985; font-weight:normal;">(Target: ${ex.targetReps})</span></div>
-                <div class="set-row" style="border-bottom:1px solid #1c232e; padding-bottom:4px; margin-bottom:6px;">
+            card.innerHTML = `
+                <div class="exercise-title">${ex.name} <span style="font-size:12px; color:#566985; font-weight:normal;">(${ex.targetReps})</span></div>
+                <div class="set-row" style="border-bottom:1px solid #1c232e; padding-bottom:4px; margin-bottom:8px;">
                     <div class="set-label">SET</div>
                     <div class="set-label">LBS</div>
                     <div class="set-label">REPS</div>
-                </div>
-            `;
-            card.innerHTML = cardHeader;
+                </div>`;
 
             for (let s = 1; s <= ex.sets; s++) {
                 let setRow = document.createElement('div');
                 setRow.className = 'set-row';
-                
                 const isLocked = config.isOrder66;
-                const repVal = isLocked ? 'value="6" readonly style="color:var(--imperial-red); font-weight:bold;"' : 'placeholder="0"';
+                // Optimized numeric patterns for phone virtual layout keyboards
+                const repVal = isLocked ? 'value="6" readonly style="color:var(--imperial-red);"' : 'placeholder="0" inputmode="numeric" pattern="[0-9]*"';
                 
                 setRow.innerHTML = `
                     <div class="set-label">#0${s}</div>
-                    <input type="number" id="${ex.id}_w_${s}" class="weight-input" data-exercise="${ex.id}" data-set="${s}" placeholder="0">
-                    <input type="number" id="${ex.id}_r_${s}" class="rep-input" data-exercise="${ex.id}" data-set="${s}" ${repVal}>
-                `;
+                    <input type="number" id="${ex.id}_w_${s}" class="weight-input" data-exercise="${ex.id}" data-set="${s}" placeholder="0" inputmode="numeric" pattern="[0-9]*">
+                    <input type="number" id="${ex.id}_r_${s}" class="rep-input" data-exercise="${ex.id}" data-set="${s}" ${repVal}>`;
                 card.appendChild(setRow);
             }
             workspace.appendChild(card);
         });
-
         attachAutofillListeners(config.isOrder66);
     }
 
-    // Downward Cascade Cascade Autofill Listeners
     function attachAutofillListeners(isOrder66Locked) {
         document.querySelectorAll('.weight-input').forEach(input => {
             input.addEventListener('input', (e) => {
-                const currentSet = parseInt(e.target.dataset.set);
-                if (currentSet === 1) {
+                if (parseInt(e.target.dataset.set) === 1) {
                     const exId = e.target.dataset.exercise;
-                    const val = e.target.value;
-                    document.querySelectorAll(`.weight-input[data-exercise="${exId}"]`).forEach(childInput => {
-                        if (parseInt(childInput.dataset.set) > 1) {
-                            childInput.value = val;
-                        }
+                    document.querySelectorAll(`.weight-input[data-exercise="${exId}"]`).forEach(child => {
+                        if (parseInt(child.dataset.set) > 1) child.value = e.target.value;
                     });
                 }
             });
         });
-
         if (!isOrder66Locked) {
             document.querySelectorAll('.rep-input').forEach(input => {
                 input.addEventListener('input', (e) => {
-                    const currentSet = parseInt(e.target.dataset.set);
-                    if (currentSet === 1) {
+                    if (parseInt(e.target.dataset.set) === 1) {
                         const exId = e.target.dataset.exercise;
-                        const val = e.target.value;
-                        document.querySelectorAll(`.rep-input[data-exercise="${exId}"]`).forEach(childInput => {
-                            if (parseInt(childInput.dataset.set) > 1) {
-                                childInput.value = val;
-                            }
+                        document.querySelectorAll(`.rep-input[data-exercise="${exId}"]`).forEach(child => {
+                            if (parseInt(child.dataset.set) > 1) child.value = e.target.value;
                         });
                     }
                 });
@@ -615,153 +537,87 @@
         }
     }
 
-    // Synthesizer Audio Engine
     function triggerAudioCue(type) {
+        if (!audioContextWoken) return;
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         const osc = audioCtx.createOscillator();
         const gainNode = audioCtx.createGain();
-        
-        osc.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-
+        osc.connect(gainNode); gainNode.connect(audioCtx.destination);
         if (type === 'click') {
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(880, audioCtx.currentTime); 
-            gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.05);
+            osc.frequency.setValueAtTime(880, audioCtx.currentTime); gainNode.gain.setValueAtTime(0.03, audioCtx.currentTime);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.05);
         } else if (type === 'beep') {
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(440, audioCtx.currentTime);
-            gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.1);
+            osc.type = 'triangle'; osc.frequency.setValueAtTime(440, audioCtx.currentTime); gainNode.gain.setValueAtTime(0.03, audioCtx.currentTime);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.1);
         } else if (type === 'alarm') {
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(120, audioCtx.currentTime);
-            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.8);
+            osc.type = 'sawtooth'; osc.frequency.setValueAtTime(120, audioCtx.currentTime); gainNode.gain.setValueAtTime(0.08, audioCtx.currentTime);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.6);
         }
     }
 
-    // Integrated Background Video Node (YouTube System Core)
     function initYouTubePlayerEngine() {
-        var tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        var firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        var tag = document.createElement('script'); tag.src = "https://www.youtube.com/iframe_api";
+        document.getElementsByTagName('script')[0].parentNode.insertBefore(tag, document.getElementsByTagName('script')[0]);
     }
 
     function onYouTubeIframeAPIReady() {
-        ytPlayer = new YT.Player('inline-audio-node', {
-            height: '0',
-            width: '0',
-            videoId: 'HqqV-Vf_kXU', 
-            events: {
-                'onReady': () => console.log("Force Audio Node Active")
-            }
-        });
+        ytPlayer = new YT.Player('inline-audio-node', { height: '0', width: '0', videoId: 'HqqV-Vf_kXU' });
     }
 
     function setupMeditationSession() {
-        timerSeconds = 1800; 
-        updateTimerDisplay();
-        if(ytPlayer && ytPlayer.loadVideoById) {
-            ytPlayer.loadVideoById('wS8WFr_N_I4'); 
-            ytPlayer.playVideo();
-        }
+        timerSeconds = 1800; updateTimerDisplay();
+        if(ytPlayer && ytPlayer.loadVideoById) { ytPlayer.loadVideoById('wS8WFr_N_I4'); ytPlayer.playVideo(); }
     }
 
-    // Countdown Modules
     function startTimer() {
-        clearInterval(countdownInterval);
-        triggerAudioCue('click');
+        clearInterval(countdownInterval); triggerAudioCue('click');
         countdownInterval = setInterval(() => {
-            if (timerSeconds > 0) {
-                timerSeconds--;
-                updateTimerDisplay();
-                if (timerSeconds === 0) {
-                    handleTimerExpiry();
-                }
-            } else {
-                clearInterval(countdownInterval);
-            }
+            if (timerSeconds > 0) { timerSeconds--; updateTimerDisplay(); if (timerSeconds === 0) handleTimerExpiry(); } 
+            else { clearInterval(countdownInterval); }
         }, 1000);
     }
 
     function resetTimer() {
-        clearInterval(countdownInterval);
-        timerSeconds = routines[activeDay].isOrder66 ? 66 : 0;
-        updateTimerDisplay();
+        clearInterval(countdownInterval); timerSeconds = routines[activeDay].isOrder66 ? 66 : 0; updateTimerDisplay();
         if(ytPlayer && ytPlayer.stopVideo) ytPlayer.stopVideo();
     }
 
     function updateTimerDisplay() {
-        let min = Math.floor(timerSeconds / 60);
-        let sec = timerSeconds % 60;
-        document.getElementById('timer-time').innerText = 
-            `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+        let min = Math.floor(timerSeconds / 60); let sec = timerSeconds % 60;
+        document.getElementById('timer-time').innerText = `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
     }
 
     function handleTimerExpiry() {
         clearInterval(countdownInterval);
         if (routines[activeDay].isOrder66) {
             triggerAudioCue('alarm');
-            if(ytPlayer && ytPlayer.loadVideoById) {
-                ytPlayer.loadVideoById('YBlVea9Bv0o'); 
-                ytPlayer.playVideo();
-            }
-        } else {
-            triggerAudioCue('beep');
-        }
+            if(ytPlayer && ytPlayer.loadVideoById) { ytPlayer.loadVideoById('YBlVea9Bv0o'); ytPlayer.playVideo(); }
+        } else { triggerAudioCue('beep'); }
     }
 
-    // Committing Logs to JSON Manifest Data structure
     function saveCurrentWorkout() {
         const todayStr = new Date().toDateString();
-        
-        if (appState.lastLoggedDate !== todayStr) {
-            appState.streak = (appState.streak || 0) + 1;
-            appState.lastLoggedDate = todayStr;
-        }
-        
+        if (appState.lastLoggedDate !== todayStr) { appState.streak = (appState.streak || 0) + 1; appState.lastLoggedDate = todayStr; }
         appState.totalWorkouts = (appState.totalWorkouts || 0) + 1;
         
-        const entry = {
-            date: new Date().toISOString(),
-            day: activeDay,
-            name: routines[activeDay].name,
-            stats: {}
-        };
-
-        document.querySelectorAll('#exercise-workspace input').forEach(input => {
-            entry.stats[input.id] = input.value;
-        });
-
+        const entry = { date: new Date().toISOString(), day: activeDay, name: routines[activeDay].name, stats: {} };
+        document.querySelectorAll('#exercise-workspace input').forEach(input => { entry.stats[input.id] = input.value; });
         appState.history.push(entry);
         saveLocalStorageState();
         triggerAudioCue('beep');
-
-        pushToGoogleDriveHolocron(entry);
-        alert("Holocron log updated successfully!");
+        pushToGoogleDriveHolocron();
+        alert("Log committed successfully!");
     }
 
-    // Drive REST Layer
     function initGoogleAuthInfrastructure() {
-        gapi.load('client', async () => {
-            await gapi.client.init({
-                discoveryDocs: [DISCOVERY_DOC],
-            });
-            gapiInited = true;
+        gapi.load('client', () => {
+            gapi.client.init({ discoveryDocs: [DISCOVERY_DOC] }).then(() => { gapiInited = true; });
         });
-
         tokenClient = google.accounts.oauth2.initTokenClient({
-            client_id: GOOGLE_CLIENT_ID,
-            scope: SCOPES,
+            client_id: GOOGLE_CLIENT_ID, scope: SCOPES,
             callback: (resp) => {
                 if (resp.error !== undefined) return;
-                document.getElementById('sync-status').innerText = "DATAPAD SYNC: CONNECTED (DRIVE MASTER)";
+                document.getElementById('sync-status').innerText = "DATAPAD SYNC: CONNECTED";
                 document.getElementById('auth-btn').style.display = "none";
                 initializeOrFetchDriveDatabase();
             },
@@ -776,71 +632,33 @@
 
     async function initializeOrFetchDriveDatabase() {
         try {
-            let response = await gapi.client.drive.files.list({
-                q: "name = 'jedi_force_training_manifest.json' and trashed = false",
-                fields: 'files(id, name)'
-            });
-            
+            let response = await gapi.client.drive.files.list({ q: "name = 'jedi_force_training_manifest.json' and trashed = false", fields: 'files(id, name)' });
             let files = response.result.files;
             if (files && files.length > 0) {
                 driveFileId = files[0].id;
-                let fileData = await gapi.client.drive.files.get({
-                    fileId: driveFileId,
-                    alt: 'media'
-                });
-                if (fileData.result && fileData.result.history) {
-                    appState = fileData.result;
-                    saveLocalStorageState();
-                }
-            } else {
-                createDriveDatabaseFile();
-            }
-        } catch (err) {
-            console.error("Holocron syncing engine disrupted", err);
-        }
+                let fileData = await gapi.client.drive.files.get({ fileId: driveFileId, alt: 'media' });
+                if (fileData.result && fileData.result.history) { appState = fileData.result; saveLocalStorageState(); }
+            } else { createDriveDatabaseFile(); }
+        } catch (err) { console.error("Sync disrupted", err); }
     }
 
     async function createDriveDatabaseFile() {
         const boundary = 'foo_bar_baz';
         const delimiter = "\r\n--" + boundary + "\r\n";
         const close_delim = "\r\n--" + boundary + "--";
-
-        const metadata = {
-            'name': 'jedi_force_training_manifest.json',
-            'mimeType': 'application/json'
-        };
-
-        const multipartRequestBody =
-            delimiter +
-            'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
-            JSON.stringify(metadata) +
-            delimiter +
-            'Content-Type: application/json\r\n\r\n' +
-            JSON.stringify(appState) +
-            close_delim;
-
-        let request = gapi.client.request({
-            'path': '/upload/drive/v3/files',
-            'method': 'POST',
-            'params': {'uploadType': 'multipart'},
-            'headers': { 'Content-Type': 'multipart/related; boundary="' + boundary + '"' },
-            'body': multipartRequestBody
-        });
-        
-        request.execute((file) => {
-            if(file.id) driveFileId = file.id;
-        });
-    }
-
-    async function pushToGoogleDriveHolocron(newEntry) {
-        if (!driveFileId) return; 
+        const metadata = { 'name': 'jedi_force_training_manifest.json', 'mimeType': 'application/json' };
+        const multipartRequestBody = delimiter + 'Content-Type: application/json; charset=UTF-8\r\n\r\n' + JSON.stringify(metadata) + delimiter + 'Content-Type: application/json\r\n\r\n' + JSON.stringify(appState) + close_delim;
         
         gapi.client.request({
-            path: `/upload/drive/v3/files/${driveFileId}`,
-            method: 'PATCH',
-            params: { uploadType: 'media' },
-            body: JSON.stringify(appState)
-        }).execute();
+            'path': '/upload/drive/v3/files', 'method': 'POST',
+            'params': {'uploadType': 'multipart'}, 'headers': { 'Content-Type': 'multipart/related; boundary="' + boundary + '"' },
+            'body': multipartRequestBody
+        }).execute(file => { if(file.id) driveFileId = file.id; });
+    }
+
+    async function pushToGoogleDriveHolocron() {
+        if (!driveFileId) return; 
+        gapi.client.request({ path: `/upload/drive/v3/files/${driveFileId}`, method: 'PATCH', params: { uploadType: 'media' }, body: JSON.stringify(appState) }).execute();
     }
 </script>
 </body>
