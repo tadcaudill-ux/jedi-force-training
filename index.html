@@ -3,1263 +3,840 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jedi Force Training</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <title>Jedi Force Training Datapad</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://apis.google.com/js/api.js" async defer></script>
+    
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
         :root {
-            --jedi-dark: #0a1628;
-            --jedi-blue: #1e88e5;
-            --jedi-light-blue: #42a5f5;
-            --jedi-accent: #64b5f6;
-            --jedi-gold: #ffd700;
-            --text-primary: #e8f1ff;
-            --text-secondary: #b3d9ff;
-            --success: #4caf50;
-            --warning: #ff9800;
+            --jedi-blue: #00f0ff;
+            --jedi-glow: rgba(0, 240, 255, 0.4);
+            --datapad-bg: #0c0f12;
+            --panel-bg: #151a21;
+            --grime-color: #242c37;
+            --text-main: #e0e6ed;
+            --imperial-red: #ff3333;
+            --imperial-glow: rgba(255, 51, 51, 0.5);
         }
 
-        html, body {
-            height: 100%;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, var(--jedi-dark) 0%, #0d1f34 100%);
-            color: var(--text-primary);
-            overflow-x: hidden;
+        /* Order 66 Theme Variant */
+        body.order-66 {
+            --jedi-blue: var(--imperial-red);
+            --jedi-glow: var(--imperial-glow);
         }
 
-        body { background-attachment: fixed; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body::before {
-            content: '';
-            position: fixed;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(30, 136, 229, 0.1) 0%, transparent 70%);
-            animation: glow 8s ease-in-out infinite;
-            pointer-events: none;
-            z-index: -1;
+        body {
+            background-color: var(--datapad-bg);
+            color: var(--text-main);
+            font-family: 'Courier New', Courier, monospace;
+            padding: 15px;
+            background-image: 
+                linear-gradient(rgba(12, 15, 18, 0.95), rgba(12, 15, 18, 0.95)),
+                radial-gradient(circle at 20% 30%, #1e2530 1px, transparent 1px),
+                radial-gradient(circle at 75% 60%, #1e2530 2px, transparent 2px);
+            background-size: 100% 100%, 20px 20px, 30px 30px;
+            font-size: 18px; /* Increased baseline font size */
         }
 
-        @keyframes glow { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(30px, 30px); } }
-
-        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
-
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding: 30px 20px;
-            background: linear-gradient(135deg, rgba(30, 136, 229, 0.2) 0%, rgba(66, 165, 245, 0.1) 100%);
-            border: 1px solid rgba(100, 181, 246, 0.3);
+        /* Datapad Frame & Greebles */
+        .datapad-container {
+            max-width: 600px;
+            margin: 0 auto;
+            border: 4px solid #3a4659;
             border-radius: 12px;
-            backdrop-filter: blur(10px);
-            animation: slideDown 0.6s ease-out;
+            background: var(--panel-bg);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 0 15px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
         }
 
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-
-        h1 { font-size: 2.5em; font-weight: 700; margin-bottom: 10px; text-shadow: 0 0 20px rgba(30, 136, 229, 0.5); letter-spacing: 2px; }
-
-        .tagline { font-size: 0.95em; color: var(--text-secondary); font-style: italic; letter-spacing: 1px; }
-
-        .main-content { display: grid; grid-template-columns: 1fr 2fr; gap: 30px; margin-bottom: 40px; }
-
-        .sidebar { display: flex; flex-direction: column; gap: 20px; }
-
-        .card {
-            background: linear-gradient(135deg, rgba(30, 136, 229, 0.15) 0%, rgba(15, 40, 71, 0.5) 100%);
-            border: 1px solid rgba(100, 181, 246, 0.3);
-            border-radius: 12px;
-            padding: 20px;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
+        .datapad-container::before {
+            content: "DATAPAD V4.66";
+            position: absolute;
+            top: 2px;
+            right: 15px;
+            font-size: 11px; /* Scaled up */
+            color: #566985;
+            letter-spacing: 1px;
         }
 
-        .card:hover { border-color: rgba(100, 181, 246, 0.6); box-shadow: 0 8px 32px rgba(30, 136, 229, 0.2); transform: translateY(-4px); }
-
-        .card h2 { font-size: 1.3em; margin-bottom: 15px; color: var(--jedi-light-blue); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
-
-        .tabs {
+        .datapad-header {
+            background: #1c232e;
+            padding: 15px;
+            border-bottom: 3px solid var(--jedi-blue);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            border-bottom: 2px solid rgba(100, 181, 246, 0.3);
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .tab-btn {
-            padding: 10px 20px;
-            background: transparent;
-            color: var(--text-secondary);
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s ease;
+        .hud-title {
+            color: var(--jedi-blue);
             text-transform: uppercase;
-            font-size: 0.9em;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-shadow: 0 0 8px var(--jedi-glow);
+            font-size: 22px; /* Scaled up */
         }
 
-        .tab-btn.active {
-            color: var(--jedi-light-blue);
-            border-bottom-color: var(--jedi-gold);
+        .rank-badge {
+            font-size: 15px; /* Scaled up */
+            background: #0c0f12;
+            padding: 6px 10px;
+            border: 1px solid var(--jedi-blue);
+            border-radius: 4px;
+            color: var(--jedi-blue);
+            text-shadow: 0 0 4px var(--jedi-glow);
+            font-weight: bold;
         }
 
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        /* Interface Panels */
+        .panel {
+            padding: 20px; /* More spacing for readability */
+            border-bottom: 1px solid #242c37;
+        }
 
-        .workout-btn {
-            padding: 12px 16px;
-            background: linear-gradient(135deg, var(--jedi-blue) 0%, var(--jedi-light-blue) 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
+        .auth-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #0e1217;
+            padding: 10px 15px;
+            font-size: 14px; /* Scaled up */
+            border-bottom: 1px dashed #3a4659;
+        }
+
+        .btn-jedi {
+            background: #1c232e;
+            color: var(--jedi-blue);
+            border: 1px solid var(--jedi-blue);
+            padding: 10px 16px; /* Larger tap targets */
+            font-family: inherit;
             cursor: pointer;
-            font-size: 0.95em;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            text-align: left;
-            margin-bottom: 8px;
-            width: 100%;
+            text-transform: uppercase;
+            font-size: 15px; /* Scaled up */
+            transition: all 0.2s ease;
+            box-shadow: 0 0 4px var(--jedi-glow);
+            font-weight: bold;
         }
 
-        .workout-btn:hover { transform: translateX(4px); box-shadow: 0 6px 20px rgba(30, 136, 229, 0.4); }
+        .btn-jedi:hover {
+            background: var(--jedi-blue);
+            color: #0c0f12;
+            box-shadow: 0 0 12px var(--jedi-blue);
+        }
 
-        .workout-btn.active { box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); border: 2px solid var(--jedi-gold); }
+        /* Stats Bar */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            background: #0e1217;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #242c37;
+        }
 
-        label { display: block; margin-bottom: 8px; font-size: 0.95em; color: var(--text-secondary); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-box {
+            text-align: center;
+        }
+        .stat-val {
+            font-size: 28px; /* Scaled up */
+            color: var(--jedi-blue);
+            text-shadow: 0 0 6px var(--jedi-glow);
+            font-weight: bold;
+        }
+        .stat-lbl { font-size: 13px; color: #788ba6; text-transform: uppercase; } /* Scaled up */
 
-        input, select { width: 100%; padding: 10px 12px; background: rgba(30, 136, 229, 0.1); border: 1px solid rgba(100, 181, 246, 0.3); border-radius: 6px; color: var(--text-primary); font-size: 1em; transition: all 0.3s ease; margin-bottom: 8px; }
+        /* Workout Selector HUD Row */
+        .workout-nav {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 12px 0;
+            scrollbar-width: thin;
+        }
+        .nav-tab {
+            background: #10141a;
+            border: 1px solid #2d3745;
+            color: #788ba6;
+            padding: 10px 16px; /* Larger tap targets */
+            font-size: 14px; /* Scaled up */
+            white-space: nowrap;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        .nav-tab.active {
+            border-color: var(--jedi-blue);
+            color: var(--jedi-blue);
+            background: #1c232e;
+            text-shadow: 0 0 4px var(--jedi-glow);
+        }
 
-        input:focus, select:focus { outline: none; border-color: var(--jedi-light-blue); box-shadow: 0 0 12px rgba(66, 165, 245, 0.3); background: rgba(30, 136, 229, 0.2); }
-
-        select option { background: var(--jedi-dark); color: var(--text-primary); }
-
-        .exercise-list { max-height: 600px; overflow-y: auto; padding-right: 8px; }
-
-        .exercise-item { background: rgba(15, 40, 71, 0.4); padding: 12px; border-left: 3px solid var(--jedi-light-blue); margin-bottom: 12px; border-radius: 4px; }
-
-        .exercise-name { font-weight: 600; color: var(--jedi-light-blue); margin-bottom: 8px; }
-
-        .exercise-details { font-size: 0.85em; color: var(--text-secondary); line-height: 1.4; }
-
-        .superset-group {
-            background: linear-gradient(135deg, rgba(100, 181, 246, 0.15) 0%, rgba(66, 165, 245, 0.1) 100%);
-            border: 2px solid var(--jedi-gold);
-            border-radius: 8px;
+        /* Exercise Card Customization */
+        .exercise-card {
+            background: #11161d;
+            border-left: 5px solid var(--jedi-blue);
             padding: 15px;
             margin-bottom: 15px;
-            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.15);
+            border-radius: 0 6px 6px 0;
         }
-
-        .superset-header { display: flex; align-items: center; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 2px solid var(--jedi-gold); }
-
-        .superset-icon { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: var(--jedi-gold); color: var(--jedi-dark); border-radius: 50%; font-weight: 700; margin-right: 10px; }
-
-        .superset-title { font-size: 1.1em; font-weight: 700; color: var(--jedi-gold); text-transform: uppercase; flex: 1; }
-
-        .superset-rounds { background: var(--jedi-gold); color: var(--jedi-dark); padding: 4px 12px; border-radius: 4px; font-weight: 700; font-size: 0.85em; }
-
-        .superset-exercise { background: rgba(30, 136, 229, 0.1); padding: 10px 12px; margin-bottom: 8px; border-left: 3px solid var(--jedi-accent); border-radius: 4px; }
-
-        .superset-exercise:last-child { margin-bottom: 0; }
-
-        .superset-exercise-name { font-weight: 600; color: var(--text-primary); margin-bottom: 3px; }
-
-        .superset-exercise-target { font-size: 0.8em; color: var(--text-secondary); }
-
-        .timer-section { background: rgba(30, 136, 229, 0.1); border: 2px solid var(--jedi-light-blue); padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 20px; }
-
-        .timer-display { font-size: 3em; font-weight: 700; color: var(--jedi-light-blue); font-family: 'Courier New', monospace; text-shadow: 0 0 15px rgba(30, 136, 229, 0.5); margin-bottom: 15px; letter-spacing: 2px; }
-
-        .timer-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-
-        .timer-btn {
-            padding: 10px 20px;
-            font-size: 0.9em;
-            font-weight: 600;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .timer-btn-start { background: var(--success); color: white; }
-        .timer-btn-start:hover { box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4); }
-        .timer-btn-stop { background: var(--warning); color: white; }
-        .timer-btn-stop:hover { box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4); }
-        .timer-btn-reset { background: rgba(100, 181, 246, 0.2); color: var(--text-primary); border: 1px solid var(--jedi-light-blue); }
-
-        .sets-container { margin-bottom: 20px; }
-
-        .set-input-group {
-            background: rgba(15, 40, 71, 0.6);
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 8px;
-            border-left: 3px solid var(--jedi-accent);
-        }
-
-        .set-header { font-weight: 600; color: var(--jedi-light-blue); margin-bottom: 8px; font-size: 0.9em; }
-
-        .set-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-        .input-field {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .input-field label { margin-bottom: 4px; font-size: 0.8em; }
-
-        .input-field input { margin-bottom: 0; padding: 8px; }
-
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.95em;
-            font-weight: 600;
-            transition: all 0.3s ease;
+        .exercise-title {
+            font-size: 17px; /* Scaled up */
+            color: var(--jedi-blue);
+            margin-bottom: 12px;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 15px;
-            width: 100%;
+            font-weight: bold;
+            line-height: 1.3;
         }
 
-        .btn-success { background: var(--success); color: white; }
-        .btn-success:hover { box-shadow: 0 8px 24px rgba(76, 175, 80, 0.4); }
+        .set-row {
+            display: grid;
+            grid-template-columns: 70px 1fr 1fr; /* Adjusted column width */
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .set-label { font-size: 14px; color: #788ba6; font-weight: bold; } /* Scaled up */
+        
+        input[type="number"] {
+            background: #07090c;
+            border: 1px solid #242c37;
+            color: #fff;
+            padding: 8px; /* Larger touch fields */
+            font-family: inherit;
+            text-align: center;
+            border-radius: 4px;
+            font-size: 16px; /* Scaled up */
+        }
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--jedi-blue);
+            box-shadow: 0 0 5px var(--jedi-glow);
+        }
 
-        .btn-sync { background: linear-gradient(135deg, var(--jedi-blue) 0%, var(--jedi-light-blue) 100%); color: white; }
-        .btn-sync:hover { box-shadow: 0 8px 24px rgba(30, 136, 229, 0.4); }
-
-        .charts-section { margin-top: 40px; }
-
-        .chart-container {
-            background: linear-gradient(135deg, rgba(30, 136, 229, 0.15) 0%, rgba(15, 40, 71, 0.5) 100%);
-            border: 1px solid rgba(100, 181, 246, 0.3);
-            border-radius: 12px;
+        /* Chronometer UI Display */
+        .timer-container {
+            background: #090c10;
+            border: 1px solid var(--jedi-blue);
             padding: 20px;
-            margin-bottom: 30px;
-            backdrop-filter: blur(10px);
+            text-align: center;
+            margin-top: 15px;
+            position: relative;
+        }
+        .timer-display {
+            font-size: 46px; /* Scaled up */
+            color: var(--jedi-blue);
+            text-shadow: 0 0 10px var(--jedi-glow);
+            font-weight: bold;
+            margin-bottom: 10px;
         }
 
-        .chart-container h3 { color: var(--jedi-light-blue); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; }
-
-        .timeframe-buttons { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-
-        .timeframe-btn {
-            padding: 8px 16px;
-            background: rgba(100, 181, 246, 0.2);
-            color: var(--text-primary);
-            border: 1px solid rgba(100, 181, 246, 0.3);
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.85em;
-            transition: all 0.3s ease;
-            font-weight: 500;
+        #yt-player-container {
+            display: none;
         }
-
-        .timeframe-btn.active { background: var(--jedi-blue); border-color: var(--jedi-light-blue); color: white; box-shadow: 0 4px 12px rgba(30, 136, 229, 0.4); }
-
-        @media (max-width: 768px) {
-            .main-content { grid-template-columns: 1fr; }
-            h1 { font-size: 1.8em; }
-            .container { padding: 15px; }
-        }
-
-        .exercise-list::-webkit-scrollbar { width: 6px; }
-        .exercise-list::-webkit-scrollbar-track { background: rgba(100, 181, 246, 0.1); border-radius: 3px; }
-        .exercise-list::-webkit-scrollbar-thumb { background: var(--jedi-blue); border-radius: 3px; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>⚡ Jedi Force Training ⚡</h1>
-            <p class="tagline">May the Force Be With Your Fitness Journey</p>
-        </header>
 
-        <div class="main-content">
-            <div class="sidebar">
-                <div class="card">
-                    <h2>Select Workout</h2>
-                    <div id="workoutButtons" style="max-height: 400px; overflow-y: auto;"></div>
-                </div>
+<div class="datapad-container">
+    
+    <div class="auth-bar">
+        <span id="sync-status">DATAPAD SYNC: OFFLINE (LOCAL STORAGE)</span>
+        <button class="btn-jedi" id="auth-btn" onclick="handleAuthClick()">Link Drive</button>
+    </div>
 
-                <div class="card">
-                    <h2>📱 Sync Data</h2>
-                    <button class="btn btn-sync" id="syncBtn" onclick="handleGoogleDriveSync()" style="width: 100%; margin-top: 0;">
-                        Sync to Google Drive
-                    </button>
-                    <p id="syncStatus" style="font-size: 0.8em; margin-top: 10px; color: var(--text-secondary); text-align: center;"></p>
-                </div>
+    <div class="datapad-header">
+        <div>
+            <div class="hud-title" id="app-title">Jedi Holocron</div>
+            <div style="font-size: 12px; color: #788ba6; margin-top: 2px;">SYSTEM STATUS: NOMINAL</div>
+        </div>
+        <div class="rank-badge" id="jedi-rank">RANK: INITIATE</div>
+    </div>
+
+    <div class="panel">
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-val" id="streak-count">0</div>
+                <div class="stat-lbl">Force Streak (Days)</div>
             </div>
-
-            <div class="main-area">
-                <div class="tabs">
-                    <button class="tab-btn active" onclick="switchTab('log')">Log Workout</button>
-                    <button class="tab-btn" onclick="switchTab('view')">View Workouts</button>
-                    <button class="tab-btn" onclick="switchTab('dashboard')">Dashboard</button>
-                </div>
-
-                <!-- Log Workout Tab -->
-                <div id="log-tab" class="tab-content active">
-                    <div class="card">
-                        <h2 id="logHeaderText" style="display: none;">Log Workout Session</h2>
-                        <form id="workoutForm" style="display: none;">
-                            <div style="margin-bottom: 20px;">
-                                <label>Workout:</label>
-                                <input type="text" id="selectedWorkout" readonly style="background: rgba(30, 136, 229, 0.05);">
-                            </div>
-
-                            <div class="timer-section">
-                                <div class="timer-display" id="timerDisplay">00:00:00</div>
-                                <div class="timer-buttons">
-                                    <button type="button" class="timer-btn timer-btn-start" id="timerStart" onclick="startTimer(event)">Start</button>
-                                    <button type="button" class="timer-btn timer-btn-stop" id="timerStop" onclick="stopTimer(event)" style="display: none;">Stop</button>
-                                    <button type="button" class="timer-btn timer-btn-reset" onclick="resetTimer(event)">Reset</button>
-                                </div>
-                            </div>
-
-                            <div style="margin-bottom: 20px;">
-                                <label>Duration (minutes):</label>
-                                <input type="number" id="duration" min="0" max="999" placeholder="Auto-filled from timer">
-                            </div>
-
-                            <div id="exerciseInputsContainer" style="margin-bottom: 20px;"></div>
-
-                            <div style="margin-bottom: 20px;">
-                                <label>Overall Difficulty (1-10):</label>
-                                <input type="range" id="difficulty" min="1" max="10" value="5" style="padding: 0; cursor: pointer;">
-                                <span id="difficultyValue" style="color: var(--jedi-light-blue); font-weight: bold;">5</span>
-                            </div>
-                            <button type="submit" class="btn btn-success">Save Workout Session</button>
-                        </form>
-
-                        <div id="noSelection" style="text-align: center; color: var(--text-secondary); padding: 40px;">
-                            <p style="font-size: 1.1em;">Select a workout from the left to begin</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- View Workouts Tab -->
-                <div id="view-tab" class="tab-content">
-                    <div class="card">
-                        <h2>Exercise Guide</h2>
-                        <div id="exerciseList" class="exercise-list" style="display: none;"></div>
-                        <div id="noViewSelection" style="text-align: center; color: var(--text-secondary); padding: 40px;">
-                            <p style="font-size: 1.1em;">Select a workout to view exercises</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Dashboard Tab -->
-                <div id="dashboard-tab" class="tab-content">
-                    <div class="charts-section">
-                        <div class="chart-container">
-                            <h3>Workout Completion History</h3>
-                            <div class="timeframe-buttons">
-                                <button class="timeframe-btn active" onclick="updateDashboard('week')">Week</button>
-                                <button class="timeframe-btn" onclick="updateDashboard('month')">Month</button>
-                                <button class="timeframe-btn" onclick="updateDashboard('6months')">6 Months</button>
-                                <button class="timeframe-btn" onclick="updateDashboard('ytd')">YTD</button>
-                                <button class="timeframe-btn" onclick="updateDashboard('year')">1 Year</button>
-                            </div>
-                            <canvas id="completionChart"></canvas>
-                        </div>
-
-                        <div class="chart-container">
-                            <h3>Average Difficulty by Workout</h3>
-                            <canvas id="difficultyChart"></canvas>
-                        </div>
-
-                        <div class="chart-container">
-                            <h3>Total Volume by Workout</h3>
-                            <canvas id="volumeChart"></canvas>
-                        </div>
-
-                        <div class="chart-container">
-                            <h3>Completion Rate</h3>
-                            <canvas id="rateChart"></canvas>
-                        </div>
-                    </div>
-                </div>
+            <div class="stat-box">
+                <div class="stat-val" id="total-logs">0</div>
+                <div class="stat-lbl">Holocron Records</div>
             </div>
         </div>
     </div>
 
-    <script>
-        const workouts = {
-            'Upper Horizontal': {
-                name: 'Upper Horizontal',
-                exercises: [
-                    { name: 'Strider with rotation', sets: 1, reps: '5' },
-                    { name: 'Band Face Pull', sets: 2, reps: '10-15' },
-                    { name: 'DDA Band Pull Apart', sets: 2, reps: '10-15' },
-                    {
-                        isSuperSet: true,
-                        name: 'Super Set of 4',
-                        rounds: 4,
-                        exercises: [
-                            { name: 'Push ups', sets: 1, reps: '30 sec' },
-                            { name: 'DB Bench Press', sets: 1, reps: '8-12' }
-                        ]
-                    },
-                    { name: 'DB Single Arm Row', sets: 4, reps: '8-12' },
-                    { name: 'DB Supine Tricep Extensions', sets: 3, reps: '15-20' },
-                    { name: 'ECP Standing Dumbbell Bicep Curl', sets: 1, reps: '5 Min' },
-                    { name: 'Seated DB Lateral Raise', sets: 3, reps: '12-15' },
-                    { name: 'Toe Touch Abs', sets: 3, reps: '25' }
-                ]
-            },
-            'Lower Anterior': {
-                name: 'Lower Anterior',
-                exercises: [
-                    { name: 'Seal Jacks', sets: 1, reps: '30 sec' },
-                    { name: '1/2 Kneeling Hip Flexor Stretch', sets: 2, reps: '10-15' },
-                    { name: 'Elbow Plank', sets: 2, reps: '30 sec' },
-                    { name: 'Glute Bridge with heels into bench', sets: 2, reps: '10-15' },
-                    { name: 'Jump Squat', sets: 2, reps: '10-12' },
-                    { name: 'DB Goblet Squat', sets: 2, reps: '10-12' },
-                    { name: 'DB RDL', sets: 3, reps: '10-12' },
-                    { name: 'DB Cyclist Squat', sets: 3, reps: '12-15' },
-                    {
-                        isSuperSet: true,
-                        name: 'Super Set of 5',
-                        rounds: 5,
-                        exercises: [
-                            { name: 'Jump Rope', sets: 1, reps: '60 sec' },
-                            { name: 'Elbow Side Plank', sets: 1, reps: '20 sec/side' },
-                            { name: 'DB Dead Bug', sets: 1, reps: '8/side' }
-                        ]
-                    }
-                ]
-            },
-            'Lower Posterior': {
-                name: 'Lower Posterior',
-                exercises: [
-                    { name: 'Knees to Chest', sets: 1, reps: '60 sec' },
-                    { name: '1/2 Kneeling Hip Flexor Stretch', sets: 2, reps: '10-15' },
-                    {
-                        isSuperSet: true,
-                        name: 'Super Set of 2',
-                        rounds: 2,
-                        exercises: [
-                            { name: 'Med Ball Dead Bug', sets: 1, reps: 'per side' },
-                            { name: 'Glute Bridge w/ heels into bench', sets: 1, reps: '15' },
-                            { name: 'Body Weight Jump Squats', sets: 1, reps: '10' }
-                        ]
-                    },
-                    { name: 'Goblet Split Squat', sets: 4, reps: '8-10/side' },
-                    { name: 'Single Leg DB Hip Thrust', sets: 4, reps: '12-15/side' },
-                    { name: 'DB Curtsy LUnge', sets: 3, reps: '10-12/side' },
-                    { name: 'Hamstring Walkouts', sets: 3, reps: '30 sec' },
-                    {
-                        isSuperSet: true,
-                        name: 'Super Set of 4',
-                        rounds: 4,
-                        exercises: [
-                            { name: 'Jump Rope', sets: 1, reps: '50 sec' },
-                            { name: 'Elbow Plank', sets: 1, reps: '60 sec' },
-                            { name: 'Bear Plank', sets: 1, reps: '30 sec' }
-                        ]
-                    }
-                ]
-            },
-            'Upper Vertical': {
-                name: 'Upper Vertical',
-                exercises: [
-                    {
-                        isSuperSet: true,
-                        name: 'Super Set of 2',
-                        rounds: 2,
-                        exercises: [
-                            { name: 'Strider with rotation', sets: 1, reps: '10-15' },
-                            { name: 'Band Pull Apart', sets: 1, reps: '10' },
-                            { name: 'Yoga Push Ups', sets: 1, reps: '10' }
-                        ]
-                    },
-                    {
-                        isSuperSet: true,
-                        name: 'Super Set of 3',
-                        rounds: 3,
-                        exercises: [
-                            { name: 'Push Ups', sets: 1, reps: '30 sec' },
-                            { name: 'Alternating DB Floor Press', sets: 1, reps: '8-12/side' }
-                        ]
-                    },
-                    { name: 'DB Gorilla Row', sets: 3, reps: '12-15' },
-                    { name: '1/2 kneeling DB 1 Arm Overhead Press', sets: 3, reps: '8-10/side' },
-                    { name: '15 Minutes of Cardio', sets: 1, reps: 'varies' }
-                ]
-            },
-            'Execute Order 66': {
-                name: 'Execute Order 66',
-                exercises: [
-                    { name: 'Stretch', sets: 1, reps: 'varies' },
-                    {
-                        isSuperSet: true,
-                        name: 'Super Set of 6',
-                        rounds: 6,
-                        exercises: [
-                            { name: 'Single KB Side Lunge', sets: 1, reps: '6/side' },
-                            { name: 'Yoga Push Ups', sets: 1, reps: '6' },
-                            { name: 'KB Reverse Lunge', sets: 1, reps: '6/side' },
-                            { name: 'DB Gorilla Row', sets: 1, reps: '6' },
-                            { name: 'KB Goblet Squat', sets: 1, reps: '6' },
-                            { name: 'Elbow Plank', sets: 1, reps: '66 sec' }
-                        ]
-                    }
-                ]
-            },
-            'Push Strength': {
-                name: 'Push Strength',
-                exercises: [
-                    { name: 'DB Floor Press', sets: 4, reps: '6-8' },
-                    { name: 'DB Goblet Squat', sets: 4, reps: '6-8' },
-                    {
-                        isSuperSet: true,
-                        name: 'Super Set of 3',
-                        rounds: 3,
-                        exercises: [
-                            { name: 'Standing DB Shoulder Press', sets: 1, reps: '8-10' },
-                            { name: 'DB Split Squat', sets: 1, reps: '8-10' }
-                        ]
-                    },
-                    {
-                        isSuperSet: true,
-                        name: 'Super Set of 3',
-                        rounds: 3,
-                        exercises: [
-                            { name: 'Single Leg DB Glute Bridge', sets: 1, reps: '10-12' },
-                            { name: 'DB floor pullover', sets: 1, reps: '10-12' }
-                        ]
-                    },
-                    {
-                        isSuperSet: true,
-                        name: 'Super Set of 3',
-                        rounds: 3,
-                        exercises: [
-                            { name: 'DB Lying Tricep Extensions', sets: 1, reps: '10-12' },
-                            { name: 'DB Lateral Raise', sets: 1, reps: '12-15' }
-                        ]
-                    },
-                    {
-                        isSuperSet: true,
-                        name: 'Super Set of 5',
-                        rounds: 5,
-                        exercises: [
-                            { name: 'Jump Rope', sets: 1, reps: '30 sec' },
-                            { name: 'High Plank Shoulder Taps', sets: 1, reps: '30 sec' }
-                        ]
-                    }
-                ]
-            },
-            'Pull Strength': {
-                name: 'Pull Strength',
-                exercises: [
-                    { name: 'Chin Ups', sets: 3, reps: '6-10' },
-                    { name: 'DB Romanian Deadlift', sets: 3, reps: '8-10' },
-                    { name: 'DB Gorilla Row', sets: 3, reps: '8-10' },
-                    { name: 'Hanging Leg Raise', sets: 3, reps: '10-15' },
-                    {
-                        isSuperSet: true,
-                        name: 'Super Set of 3',
-                        rounds: 3,
-                        exercises: [
-                            { name: 'DB Alternating Hammer Curl', sets: 1, reps: '12-15' },
-                            { name: 'DB Hamstring Curl', sets: 1, reps: '12-15' }
-                        ]
-                    },
-                    {
-                        isSuperSet: true,
-                        name: 'Super Set of 1',
-                        rounds: 1,
-                        exercises: [
-                            { name: 'Strider w/ Rotation', sets: 1, reps: '10/side' },
-                            { name: 'Leg Swings', sets: 1, reps: '30 sec/side' },
-                            { name: 'High Knees', sets: 1, reps: '30 sec' },
-                            { name: 'Butt Kickers', sets: 1, reps: '30 sec' }
-                        ]
-                    },
-                    { name: '30 minute run', sets: 1, reps: 'varies' }
-                ]
-            },
-            'Push Functional': {
-                name: 'Push Functional',
-                exercises: [
-                    { name: 'Feet Elevated Pushups', sets: 3, reps: '10-12' },
-                    { name: 'Bulgarian Split Squat', sets: 3, reps: '10-12' },
-                    {
-                        isSuperSet: true,
-                        name: 'Super Set of 3',
-                        rounds: 3,
-                        exercises: [
-                            { name: 'Alternating DB Z Press', sets: 1, reps: '10-12' },
-                            { name: 'DB Wide Row', sets: 1, reps: '10-12' }
-                        ]
-                    },
-                    { name: 'DB Turkish Get Up', sets: 3, reps: '5/side' },
-                    {
-                        isSuperSet: true,
-                        name: 'Super Set of 3',
-                        rounds: 3,
-                        exercises: [
-                            { name: 'Floor DB Chest Fly', sets: 1, reps: '10-12' },
-                            { name: 'Adductor Plank', sets: 1, reps: '30 sec/side' },
-                            { name: 'Jump Rope', sets: 1, reps: '1 min' }
-                        ]
-                    }
-                ]
-            },
-            'Pull Functional': {
-                name: 'Pull Functional',
-                exercises: [
-                    { name: 'Pull Ups', sets: 4, reps: '8-12' },
-                    { name: 'Renegade Row', sets: 3, reps: '8-10' },
-                    { name: 'Dual DB Deadlift', sets: 3, reps: '8-10' },
-                    {
-                        isSuperSet: true,
-                        name: 'Super Set of 3',
-                        rounds: 3,
-                        exercises: [
-                            { name: 'DB Windmill', sets: 1, reps: '8-10/side' },
-                            { name: 'Lateral Bounds', sets: 1, reps: '5/side' }
-                        ]
-                    },
-                    { name: 'DB Arnold Shoulder Press', sets: 3, reps: '10-12' },
-                    { name: 'DB Cuban Rotations', sets: 3, reps: '12-15' },
-                    {
-                        isSuperSet: true,
-                        name: 'Super Set of 10',
-                        rounds: 10,
-                        exercises: [
-                            { name: 'Jump Squat', sets: 1, reps: '10 sec' },
-                            { name: 'Burpee', sets: 1, reps: '10 sec' },
-                            { name: 'Mountain Climber', sets: 1, reps: '10 sec' }
-                        ]
-                    }
-                ]
-            }
-        };
+    <div class="panel" style="padding-top: 5px; padding-bottom: 5px;">
+        <div class="workout-nav" id="workout-tabs"></div>
+    </div>
 
-        let workoutData = [];
-        let currentWorkout = null;
-        let timerInterval = null;
-        let timerSeconds = 0;
-        let timerRunning = false;
-        let currentTimeframe = 'week';
-        let charts = {};
+    <div class="panel" id="exercise-workspace"></div>
 
-        function init() {
-            loadWorkoutData();
-            renderWorkoutButtons();
+    <div class="panel" style="display: flex; justify-content: space-between; align-items: center;">
+        <button class="btn-jedi" onclick="triggerAudioCue('click')">Test Comms</button>
+        <button class="btn-jedi" style="background: rgba(0,240,255,0.1);" onclick="saveCurrentWorkout()">Commit to Holocron</button>
+    </div>
+
+    <div class="timer-container" id="global-timer-panel">
+        <div style="font-size: 12px; color: #788ba6; text-transform: uppercase; margin-bottom: 6px;">Chronometer Modulate</div>
+        <div class="timer-display" id="timer-time">00:00</div>
+        <div style="display: flex; justify-content: center; gap: 12px;">
+            <button class="btn-jedi" style="font-size:12px; padding:6px 12px;" onclick="startTimer()">Engage</button>
+            <button class="btn-jedi" style="font-size:12px; padding:6px 12px;" onclick="resetTimer()">Reset</button>
+        </div>
+    </div>
+
+</div>
+
+<div id="yt-player-container">
+    <div id="inline-audio-node"></div>
+</div>
+
+<script>
+    // Configuration Definitions
+    const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID'; 
+    const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest';
+    const SCOPES = 'https://www.googleapis.com/auth/drive.file';
+
+    let tokenClient;
+    let gapiInited = false;
+    let gsiInited = false;
+    let driveFileId = null;
+
+    // Local Tracking Engine State Variables
+    let appState = {
+        streak: 0,
+        totalWorkouts: 0,
+        lastLoggedDate: null,
+        history: []
+    };
+
+    let activeDay = 1;
+    let countdownInterval;
+    let timerSeconds = 0;
+    let ytPlayer;
+
+    // Database Payload Mapping of All 9 Routines + Meditation Module
+    const routines = {
+        1: {
+            name: "Day 1: Upper Horizontal",
+            isOrder66: false,
+            exercises: [
+                { id: "d1_strider", name: "Strider with Rotation", sets: 1, targetReps: "5 reps" },
+                { id: "d1_facepull", name: "Band Face Pull", sets: 2, targetReps: "10-15 reps" },
+                { id: "d1_pullapart", name: "DDA Band Pull Apart", sets: 2, targetReps: "10-15 reps" },
+                { id: "d1_ss_bench", name: "[SUPERSET] DB Bench Press", sets: 4, targetReps: "8-12 reps (+ 30s Pushups)" },
+                { id: "d1_armrow", name: "DB Single Arm Row", sets: 4, targetReps: "8-12 reps" },
+                { id: "d1_tricep", name: "DB Supine Tricep Extensions", sets: 3, targetReps: "15-20 reps" },
+                { id: "d1_curl", name: "ECP Standing DB Bicep Curl", sets: 1, targetReps: "5 Min Time Under Tension" },
+                { id: "d1_latraise", name: "Seated DB Lateral Raise", sets: 3, targetReps: "12-15 reps" },
+                { id: "d1_toe_touch", name: "Toe Touch Abs", sets: 3, targetReps: "25 reps" }
+            ]
+        },
+        2: {
+            name: "Day 2: Lower Anterior",
+            isOrder66: false,
+            exercises: [
+                { id: "d2_seal_jacks", name: "Seal Jacks", sets: 1, targetReps: "30 seconds" },
+                { id: "d2_hip_stretch", name: "1/2 Kneeling Hip Flexor Stretch", sets: 2, targetReps: "10-15 reps" },
+                { id: "d2_plank", name: "Elbow Plank", sets: 2, targetReps: "30 sec" },
+                { id: "d2_glute_bridge", name: "Glute Bridge (heels into bench)", sets: 2, targetReps: "10-15 reps" },
+                { id: "d2_jump_squat", name: "Jump Squat", sets: 2, targetReps: "10-12 reps" },
+                { id: "d2_goblet", name: "DB Goblet Squat", sets: 2, targetReps: "10-12 reps" },
+                { id: "d2_rdl", name: "DB RDL", sets: 3, targetReps: "10-12 reps" },
+                { id: "d2_cyclist", name: "DB Cyclist Squat", sets: 3, targetReps: "12-15 reps" },
+                { id: "d2_ss_finisher", name: "[FINISHER SUPERSET] DB Dead Bug / Side Plank / Jump Rope", sets: 5, targetReps: "8/side | 20s/side | 60s" }
+            ]
+        },
+        3: {
+            name: "Day 3: Lower Posterior",
+            isOrder66: false,
+            exercises: [
+                { id: "d3_knees_chest", name: "Knees to Chest", sets: 1, targetReps: "60 seconds" },
+                { id: "d3_hip_stretch", name: "1/2 Kneeling Hip Flexor Stretch", sets: 2, targetReps: "10-15 reps" },
+                { id: "d3_ss_warmup", name: "[SUPERSET] Med Ball Dead Bug / Glute Bridge / BW Jump Squats", sets: 2, targetReps: "Rep/side | 15 reps | 10 reps" },
+                { id: "d3_split_squat", name: "Goblet Split Squat", sets: 4, targetReps: "8-10 reps per side" },
+                { id: "d3_hip_thrust", name: "Single Leg DB Hip Thrust", sets: 4, targetReps: "12-15 reps per side" },
+                { id: "d3_curtsy", name: "DB Curtsy Lunge", sets: 3, targetReps: "10-12 reps per side" },
+                { id: "d3_walkouts", name: "Hamstring Walkouts", sets: 3, targetReps: "30 sec hold/reps" },
+                { id: "d3_ss_finisher", name: "[SUPERSET] Jump Rope / Elbow Plank / Bear Plank", sets: 4, targetReps: "50s | 60s | 30s" }
+            ]
+        },
+        4: {
+            name: "Day 4: Upper Vertical",
+            isOrder66: false,
+            exercises: [
+                { id: "d4_ss_warmup", name: "[SUPERSET] Strider w/ Rotation / Band Pull Apart / Yoga Push Ups", sets: 2, targetReps: "10-15 reps | 10 reps | 10 reps" },
+                { id: "d4_ss_press", name: "[SUPERSET] Push Ups / Alternating DB Floor Press", sets: 3, targetReps: "30s | 8-12 reps per side" },
+                { id: "d4_gorilla", name: "DB Gorilla Row", sets: 3, targetReps: "12-15 reps" },
+                { id: "d4_ohp", name: "1/2 Kneeling DB 1 Arm Overhead Press", sets: 3, targetReps: "8-10 reps per side" },
+                { id: "d4_cardio", name: "Sustained Cardio Engine", sets: 1, targetReps: "15 Minutes" }
+            ]
+        },
+        5: {
+            name: "Day 5: Execute Order 66",
+            isOrder66: true,
+            exercises: [
+                { id: "o66_stretch", name: "Mandatory Fleet Mobilization Stretch", sets: 1, targetReps: "Focus on Mobility" },
+                { id: "o66_side_lunge", name: "[66 PROTOCOL] Single KB Side Lunge", sets: 6, targetReps: "6 reps per side" },
+                { id: "o66_yoga_push", name: "[66 PROTOCOL] Yoga Push Ups", sets: 6, targetReps: "6 reps" },
+                { id: "o66_rev_lunge", name: "[66 PROTOCOL] KB Reverse Lunge", sets: 6, targetReps: "6 reps per side" },
+                { id: "o66_gorilla", name: "[66 PROTOCOL] DB Gorilla Row", sets: 6, targetReps: "6 reps" },
+                { id: "o66_goblet", name: "[66 PROTOCOL] KB Goblet Squat", sets: 6, targetReps: "6 reps" },
+                { id: "o66_plank", name: "[66 PROTOCOL] Static Elbow Plank", sets: 6, targetReps: "66 Seconds" }
+            ]
+        },
+        6: {
+            name: "Day 6: Push Strength",
+            isOrder66: false,
+            exercises: [
+                { id: "d6_floor_press", name: "DB Floor Press", sets: 4, targetReps: "6-8 reps" },
+                { id: "d6_goblet", name: "DB Goblet Squat", sets: 4, targetReps: "6-8 reps" },
+                { id: "d6_ss_shoulder", name: "[SUPERSET] Standing DB Shoulder Press / DB Split Squat", sets: 3, targetReps: "8-10 reps | 8-10 reps" },
+                { id: "d6_ss_bridge", name: "[SUPERSET] Single Leg DB Glute Bridge / DB Floor Pullover", sets: 3, targetReps: "10-12 reps | 10-12 reps" },
+                { id: "d6_ss_arms", name: "[SUPERSET] DB Lying Tricep Extensions / DB Lateral Raise", sets: 3, targetReps: "10-12 reps | 12-15 reps" },
+                { id: "d6_ss_conditioning", name: "[SUPERSET] Jump Rope / High Plank Shoulder Taps", sets: 5, targetReps: "30 seconds | 30 seconds" }
+            ]
+        },
+        7: {
+            name: "Day 7: Pull Strength",
+            isOrder66: false,
+            exercises: [
+                { id: "d7_chin_ups", name: "Chin Ups", sets: 3, targetReps: "6-10 reps" },
+                { id: "d7_rdl", name: "DB Romanian Deadlift", sets: 3, targetReps: "8-10 reps" },
+                { id: "d7_gorilla", name: "DB Gorilla Row", sets: 3, targetReps: "8-10 reps" },
+                { id: "d7_leg_raise", name: "Hanging Leg Raise", sets: 3, targetReps: "10-15 reps" },
+                { id: "d7_ss_curls", name: "[SUPERSET] DB Alternating Hammer Curl / DB Hamstring Curl", sets: 3, targetReps: "12-15 reps | 12-15 reps" },
+                { id: "d7_ss_warmup", name: "[SUPERSET] Strider w/ Rotation / Leg Swings / High Knees / Butt Kickers", sets: 1, targetReps: "10/side | 30s/side | 30s | 30s" },
+                { id: "d7_run", name: "Sustained Sector Run", sets: 1, targetReps: "30 Minutes" }
+            ]
+        },
+        8: {
+            name: "Day 8: Push Functional Strength",
+            isOrder66: false,
+            exercises: [
+                { id: "d8_elevated_push", name: "Feet Elevated Pushups", sets: 3, targetReps: "10-12 reps" },
+                { id: "d8_bulgarian", name: "Bulgarian Split Squat", sets: 3, targetReps: "10-12 reps" },
+                { id: "d8_ss_press", name: "[SUPERSET] Alternating DB Z Press / DB Wide Row", sets: 3, targetReps: "10-12 reps | 10-12 reps" },
+                { id: "d8_tgu", name: "DB Turkish Get Up", sets: 3, targetReps: "5 reps per side" },
+                { id: "d8_ss_fly", name: "[SUPERSET] Floor DB Chest Fly / Adductor Plank / Jump Rope", sets: 3, targetReps: "10-12 reps | 30s/side | 1 Min" }
+            ]
+        },
+        9: {
+            name: "Day 9: Pull Functional Strength",
+            isOrder66: false,
+            exercises: [
+                { id: "d9_pull_ups", name: "Pull Ups", sets: 4, targetReps: "8-12 reps" },
+                { id: "d9_renegade", name: "Renegade Row", sets: 3, targetReps: "8-10 reps" },
+                { id: "d9_deadlift", name: "Dual DB Deadlift", sets: 3, targetReps: "8-10 reps" },
+                { id: "d9_ss_windmill", name: "[SUPERSET] DB Windmill / Lateral Bounds", sets: 3, targetReps: "8-10 per side | 5 per side" },
+                { id: "d9_arnold", name: "DB Arnold Shoulder Press", sets: 3, targetReps: "10-12 reps" },
+                { id: "d9_cuban", name: "DB Cuban Rotations", sets: 3, targetReps: "12-15 reps" },
+                { id: "d9_ss_hell", name: "[10-ROUND FINISHER] Jump Squat / Burpee / Mountain Climber", sets: 10, targetReps: "10s | 10s | 10s" }
+            ]
+        },
+        0: {
+            name: "Rest, Reflect & Meditate",
+            isMeditation: true,
+            exercises: []
         }
+    };
 
-        function switchTab(tab) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            
-            document.getElementById(tab + '-tab').classList.add('active');
-            event.target.classList.add('active');
+    // Initialization Sequence
+    window.addEventListener('DOMContentLoaded', () => {
+        loadLocalState();
+        generateNavigationTabs();
+        renderWorkspace();
+        initGoogleAuthInfrastructure();
+        initYouTubePlayerEngine();
+    });
 
-            if (tab === 'dashboard') {
-                updateDashboard('week');
-            }
+    function loadLocalState() {
+        const data = localStorage.getItem('jedi_datapad_state');
+        if (data) {
+            appState = JSON.parse(data);
+            updateDashboardMetrics();
         }
+    }
 
-        function renderWorkoutButtons() {
-            const container = document.getElementById('workoutButtons');
-            container.innerHTML = '';
-            
-            Object.values(workouts).forEach(workout => {
-                const btn = document.createElement('button');
-                btn.className = 'workout-btn';
-                btn.textContent = workout.name;
-                btn.onclick = (e) => selectWorkout(workout, e);
-                container.appendChild(btn);
-            });
-        }
+    function saveLocalStorageState() {
+        localStorage.setItem('jedi_datapad_state', JSON.stringify(appState));
+        updateDashboardMetrics();
+    }
 
-        function selectWorkout(workout, e) {
-            currentWorkout = workout;
-            document.getElementById('selectedWorkout').value = workout.name;
-            document.getElementById('workoutForm').style.display = 'block';
-            document.getElementById('logHeaderText').style.display = 'block';
-            document.getElementById('noSelection').style.display = 'none';
-            
-            document.getElementById('exerciseList').style.display = 'block';
-            document.getElementById('noViewSelection').style.display = 'none';
-
-            resetTimer();
-
-            document.querySelectorAll('.workout-btn').forEach(btn => btn.classList.remove('active'));
-            e.target.classList.add('active');
-
-            renderExercises();
-            renderExerciseInputs();
-        }
-
-        function renderExercises() {
-            const container = document.getElementById('exerciseList');
-            container.innerHTML = '';
-            
-            currentWorkout.exercises.forEach(item => {
-                if (item.isSuperSet) {
-                    const supersetDiv = document.createElement('div');
-                    supersetDiv.className = 'superset-group';
-                    
-                    const headerDiv = document.createElement('div');
-                    headerDiv.className = 'superset-header';
-                    headerDiv.innerHTML = `
-                        <div class="superset-icon">⚡</div>
-                        <div class="superset-title">${item.name}</div>
-                        <div class="superset-rounds">${item.rounds} Rounds</div>
-                    `;
-                    supersetDiv.appendChild(headerDiv);
-                    
-                    item.exercises.forEach(exercise => {
-                        const exDiv = document.createElement('div');
-                        exDiv.className = 'superset-exercise';
-                        exDiv.innerHTML = `
-                            <div class="superset-exercise-name">${exercise.name}</div>
-                            <div class="superset-exercise-target">${exercise.sets} set(s) x ${exercise.reps}</div>
-                        `;
-                        supersetDiv.appendChild(exDiv);
-                    });
-                    
-                    container.appendChild(supersetDiv);
-                } else {
-                    const div = document.createElement('div');
-                    div.className = 'exercise-item';
-                    div.innerHTML = `
-                        <div class="exercise-name">${item.name}</div>
-                        <div class="exercise-details">${item.sets} set(s) x ${item.reps}</div>
-                    `;
-                    container.appendChild(div);
-                }
-            });
-        }
-
-        function renderExerciseInputs() {
-            const container = document.getElementById('exerciseInputsContainer');
-            container.innerHTML = '';
-            
-            currentWorkout.exercises.forEach((item, index) => {
-                if (item.isSuperSet) {
-                    const supersetDiv = document.createElement('div');
-                    supersetDiv.className = 'superset-group';
-                    
-                    const headerDiv = document.createElement('div');
-                    headerDiv.className = 'superset-header';
-                    headerDiv.innerHTML = `
-                        <div class="superset-icon">⚡</div>
-                        <div class="superset-title">${item.name}</div>
-                        <div class="superset-rounds">${item.rounds} Rounds</div>
-                    `;
-                    supersetDiv.appendChild(headerDiv);
-                    
-                    item.exercises.forEach((exercise, exIndex) => {
-                        renderExerciseSetInputs(supersetDiv, exercise, index, exIndex, true);
-                    });
-                    
-                    container.appendChild(supersetDiv);
-                } else {
-                    const div = document.createElement('div');
-                    renderExerciseSetInputs(div, item, index, 0, false);
-                    container.appendChild(div);
-                }
-            });
-        }
-
-        function renderExerciseSetInputs(parent, exercise, index, exIndex, isSuperSet) {
-            const setsContainer = document.createElement('div');
-            setsContainer.className = isSuperSet ? 'sets-container' : 'exercise-input-section';
-            setsContainer.style.background = isSuperSet ? 'rgba(30, 136, 229, 0.05)' : 'rgba(15, 40, 71, 0.6)';
-            setsContainer.style.padding = '15px';
-            setsContainer.style.borderRadius = '8px';
-            setsContainer.style.marginBottom = isSuperSet ? '10px' : '15px';
-            setsContainer.style.borderLeft = isSuperSet ? '2px solid var(--jedi-accent)' : '3px solid var(--jedi-light-blue)';
-            
-            const title = document.createElement('div');
-            title.style.fontWeight = '600';
-            title.style.color = 'var(--jedi-light-blue)';
-            title.style.marginBottom = '10px';
-            title.style.fontSize = '0.95em';
-            title.textContent = exercise.name;
-            setsContainer.appendChild(title);
-
-            // For supersets, use rounds instead of sets
-            const iterations = isSuperSet ? currentWorkout.exercises[index].rounds : exercise.sets;
-            const iterationLabel = isSuperSet ? 'Round' : 'Set';
-
-            for (let set = 1; set <= iterations; set++) {
-                const setDiv = document.createElement('div');
-                setDiv.className = 'set-input-group';
-                
-                const setHeader = document.createElement('div');
-                setHeader.className = 'set-header';
-                setHeader.textContent = `${iterationLabel} ${set}`;
-                setDiv.appendChild(setHeader);
-
-                const inputsDiv = document.createElement('div');
-                inputsDiv.className = 'set-inputs';
-
-                const weightInput = document.createElement('div');
-                weightInput.className = 'input-field';
-                weightInput.innerHTML = `
-                    <label>Weight (lbs)</label>
-                    <input type="number" class="set-weight" data-index="${index}" data-ex="${exIndex}" data-set="${set}" min="0" max="999" placeholder="0" step="0.5">
-                `;
-                inputsDiv.appendChild(weightInput);
-
-                const repsInput = document.createElement('div');
-                repsInput.className = 'input-field';
-                repsInput.innerHTML = `
-                    <label>Reps</label>
-                    <input type="number" class="set-reps" data-index="${index}" data-ex="${exIndex}" data-set="${set}" min="0" max="999" placeholder="0">
-                `;
-                inputsDiv.appendChild(repsInput);
-
-                setDiv.appendChild(inputsDiv);
-                setsContainer.appendChild(setDiv);
-            }
-
-            parent.appendChild(setsContainer);
-        }
-
-        window.startTimer = function(e) {
-            e.preventDefault();
-            if (timerRunning) return;
-            timerRunning = true;
-            document.getElementById('timerStart').style.display = 'none';
-            document.getElementById('timerStop').style.display = 'inline-block';
-            
-            timerInterval = setInterval(() => {
-                timerSeconds++;
-                updateTimerDisplay();
-            }, 1000);
-        };
-
-        window.stopTimer = function(e) {
-            e.preventDefault();
-            timerRunning = false;
-            clearInterval(timerInterval);
-            document.getElementById('timerStart').style.display = 'inline-block';
-            document.getElementById('timerStop').style.display = 'none';
-            
-            const minutes = Math.floor(timerSeconds / 60);
-            document.getElementById('duration').value = minutes;
-        };
-
-        window.resetTimer = function(e) {
-            if (e) e.preventDefault();
-            timerRunning = false;
-            clearInterval(timerInterval);
-            timerSeconds = 0;
-            updateTimerDisplay();
-            document.getElementById('timerStart').style.display = 'inline-block';
-            document.getElementById('timerStop').style.display = 'none';
-            document.getElementById('duration').value = '';
-        };
-
-        function updateTimerDisplay() {
-            const hours = Math.floor(timerSeconds / 3600);
-            const minutes = Math.floor((timerSeconds % 3600) / 60);
-            const seconds = timerSeconds % 60;
-            const display = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-            document.getElementById('timerDisplay').textContent = display;
-        }
-
-        document.getElementById('difficulty')?.addEventListener('input', function() {
-            document.getElementById('difficultyValue').textContent = this.value;
-        });
-
-        document.getElementById('workoutForm')?.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const exerciseData = [];
-            currentWorkout.exercises.forEach((item, index) => {
-                if (item.isSuperSet) {
-                    item.exercises.forEach((exercise, exIndex) => {
-                        const sets = [];
-                        for (let round = 1; round <= item.rounds; round++) {
-                            const weight = parseFloat(document.querySelector(`.set-weight[data-index="${index}"][data-ex="${exIndex}"][data-set="${round}"]`)?.value) || 0;
-                            const reps = parseInt(document.querySelector(`.set-reps[data-index="${index}"][data-ex="${exIndex}"][data-set="${round}"]`)?.value) || 0;
-                            sets.push({ round, weight, reps });
-                        }
-                        exerciseData.push({
-                            name: exercise.name,
-                            sets: sets,
-                            superSet: item.name,
-                            rounds: item.rounds
-                        });
-                    });
-                } else {
-                    const sets = [];
-                    for (let set = 1; set <= item.sets; set++) {
-                        const weight = parseFloat(document.querySelector(`.set-weight[data-index="${index}"][data-ex="0"][data-set="${set}"]`)?.value) || 0;
-                        const reps = parseInt(document.querySelector(`.set-reps[data-index="${index}"][data-ex="0"][data-set="${set}"]`)?.value) || 0;
-                        sets.push({ set, weight, reps });
-                    }
-                    exerciseData.push({
-                        name: item.name,
-                        sets: sets
-                    });
-                }
-            });
-            
-            const session = {
-                date: new Date().toISOString(),
-                workout: document.getElementById('selectedWorkout').value,
-                duration: parseInt(document.getElementById('duration').value) || 0,
-                difficulty: parseInt(document.getElementById('difficulty').value),
-                exercises: exerciseData
-            };
-
-            workoutData.push(session);
-            saveWorkoutData();
-            
-            alert(`✓ Workout logged! Duration: ${session.duration}min | Difficulty: ${session.difficulty}/10`);
-            
-            this.reset();
-            document.getElementById('difficulty').value = 5;
-            document.getElementById('difficultyValue').textContent = '5';
-            resetTimer();
-            renderExerciseInputs();
-        });
-
-        window.updateDashboard = function(timeframe) {
-            currentTimeframe = timeframe;
-            
-            document.querySelectorAll('.timeframe-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            updateCompletionChart();
-            updateDifficultyChart();
-            updateVolumeChart();
-            updateRateChart();
-        };
-
-        function getFilteredData() {
-            const now = new Date();
-            let startDate = new Date();
-            
-            switch(currentTimeframe) {
-                case 'week':
-                    startDate.setDate(now.getDate() - 7);
-                    break;
-                case 'month':
-                    startDate.setMonth(now.getMonth() - 1);
-                    break;
-                case '6months':
-                    startDate.setMonth(now.getMonth() - 6);
-                    break;
-                case 'ytd':
-                    startDate = new Date(now.getFullYear(), 0, 1);
-                    break;
-                case 'year':
-                    startDate.setFullYear(now.getFullYear() - 1);
-                    break;
-            }
-            
-            return workoutData.filter(session => new Date(session.date) >= startDate);
-        }
-
-        function updateCompletionChart() {
-            const filtered = getFilteredData();
-            const workoutCounts = {};
-            
-            filtered.forEach(session => {
-                workoutCounts[session.workout] = (workoutCounts[session.workout] || 0) + 1;
-            });
-
-            const ctx = document.getElementById('completionChart')?.getContext('2d');
-            if (!ctx) return;
-
-            if (charts.completion) charts.completion.destroy();
-
-            charts.completion = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: Object.keys(workoutCounts),
-                    datasets: [{
-                        label: 'Completions',
-                        data: Object.values(workoutCounts),
-                        backgroundColor: '#42a5f5',
-                        borderColor: '#1e88e5',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { labels: { color: 'var(--text-primary)' } } },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { color: 'var(--text-secondary)' },
-                            grid: { color: 'rgba(100, 181, 246, 0.1)' }
-                        },
-                        x: { ticks: { color: 'var(--text-secondary)' }, grid: { color: 'rgba(100, 181, 246, 0.1)' } }
-                    }
-                }
-            });
-        }
-
-        function updateDifficultyChart() {
-            const filtered = getFilteredData();
-            const diffByWorkout = {};
-            const countByWorkout = {};
-            
-            filtered.forEach(session => {
-                if (!diffByWorkout[session.workout]) {
-                    diffByWorkout[session.workout] = 0;
-                    countByWorkout[session.workout] = 0;
-                }
-                diffByWorkout[session.workout] += session.difficulty;
-                countByWorkout[session.workout]++;
-            });
-
-            const avgDiff = Object.keys(diffByWorkout).map(w => (diffByWorkout[w] / countByWorkout[w]).toFixed(1));
-
-            const ctx = document.getElementById('difficultyChart')?.getContext('2d');
-            if (!ctx) return;
-
-            if (charts.difficulty) charts.difficulty.destroy();
-
-            charts.difficulty = new Chart(ctx, {
-                type: 'radar',
-                data: {
-                    labels: Object.keys(diffByWorkout),
-                    datasets: [{
-                        label: 'Avg Difficulty',
-                        data: avgDiff,
-                        borderColor: '#1e88e5',
-                        backgroundColor: 'rgba(30, 136, 229, 0.2)',
-                        pointBackgroundColor: '#64b5f6',
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        r: {
-                            beginAtZero: true,
-                            max: 10,
-                            ticks: { color: 'var(--text-secondary)' },
-                            grid: { color: 'rgba(100, 181, 246, 0.1)' }
-                        }
-                    },
-                    plugins: { legend: { labels: { color: 'var(--text-primary)' } } }
-                }
-            });
-        }
-
-        function updateVolumeChart() {
-            const filtered = getFilteredData();
-            const volumeByWorkout = {};
-            
-            filtered.forEach(session => {
-                let totalVolume = 0;
-                session.exercises.forEach(ex => {
-                    ex.sets.forEach(s => {
-                        totalVolume += (s.weight * s.reps);
-                    });
-                });
-                volumeByWorkout[session.workout] = (volumeByWorkout[session.workout] || 0) + totalVolume;
-            });
-
-            const ctx = document.getElementById('volumeChart')?.getContext('2d');
-            if (!ctx) return;
-
-            if (charts.volume) charts.volume.destroy();
-
-            charts.volume = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(volumeByWorkout),
-                    datasets: [{
-                        data: Object.values(volumeByWorkout),
-                        backgroundColor: ['#42a5f5', '#1e88e5', '#64b5f6', '#ffd700', '#4caf50', '#ff9800', '#e91e63', '#9c27b0', '#00bcd4'],
-                        borderColor: '#0a1628',
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { labels: { color: 'var(--text-primary)' } } }
-                }
-            });
-        }
-
-        function updateRateChart() {
-            const filtered = getFilteredData();
-            const total = filtered.length;
-            const completed = filtered.filter(s => s.duration > 0 && s.exercises.length > 0).length;
-
-            const ctx = document.getElementById('rateChart')?.getContext('2d');
-            if (!ctx) return;
-
-            if (charts.rate) charts.rate.destroy();
-
-            charts.rate = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Completed', 'Pending'],
-                    datasets: [{
-                        data: [completed, Math.max(0, total - completed)],
-                        backgroundColor: ['#4caf50', 'rgba(100, 181, 246, 0.2)'],
-                        borderColor: ['#4caf50', 'rgba(100, 181, 246, 0.3)'],
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { labels: { color: 'var(--text-primary)' } } }
-                }
-            });
-        }
-
-        function saveWorkoutData() {
-            localStorage.setItem('jediForceWorkouts', JSON.stringify(workoutData));
-        }
-
-        function loadWorkoutData() {
-            const saved = localStorage.getItem('jediForceWorkouts');
-            if (saved) {
-                workoutData = JSON.parse(saved);
-            }
-        }
-
-        window.addEventListener('load', init);
-    </script>
-
-    <script>
-        // Google Drive Integration
-        const CLIENT_ID = '153847011083-abq42kssquls5mmshde7k106m8rt9pjo.apps.googleusercontent.com';
-        const SCOPES = 'https://www.googleapis.com/auth/drive.file';
+    function updateDashboardMetrics() {
+        document.getElementById('streak-count').innerText = appState.streak || 0;
+        document.getElementById('total-logs').innerText = appState.totalWorkouts || 0;
         
-        let tokenClient;
-        let accessToken = null;
+        let rank = "INITIATE";
+        const total = appState.totalWorkouts || 0;
+        if (total > 250) rank = "JEDI MASTER";
+        else if (total > 80) rank = "JEDI KNIGHT";
+        else if (total > 20) rank = "PADAWAN";
+        
+        document.getElementById('jedi-rank').innerText = `RANK: ${rank}`;
+    }
 
-        // Initialize Google Sign-In
-        function initializeGoogleSignIn() {
-            tokenClient = google.accounts.oauth2.initTokenClient({
-                client_id: CLIENT_ID,
-                scope: SCOPES,
-                callback: (tokenResponse) => {
-                    accessToken = tokenResponse.access_token;
-                    syncToDrive();
-                },
-            });
+    // Generate Scrollable HUD Module Bar
+    function generateNavigationTabs() {
+        const tabContainer = document.getElementById('workout-tabs');
+        tabContainer.innerHTML = ''; 
+        
+        Object.keys(routines).forEach(key => {
+            let dayId = parseInt(key);
+            let tab = document.createElement('div');
+            tab.className = `nav-tab ${activeDay === dayId ? 'active' : ''}`;
+            
+            if (dayId === 0) {
+                tab.innerText = "Meditation";
+            } else if (dayId === 5) {
+                tab.innerText = "⚠️ ORDER 66";
+            } else {
+                tab.innerText = `Day ${dayId}`;
+            }
+            
+            tab.onclick = (e) => {
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                e.target.classList.add('active');
+                switchWorkout(dayId);
+            };
+            tabContainer.appendChild(tab);
+        });
+    }
+
+    function switchWorkout(dayNum) {
+        activeDay = dayNum;
+        renderWorkspace();
+        triggerAudioCue('beep');
+    }
+
+    // Dynamic Module Painting Layout
+    function renderWorkspace() {
+        const workspace = document.getElementById('exercise-workspace');
+        const config = routines[activeDay];
+        
+        if(config.isOrder66) {
+            document.body.classList.add('order-66');
+            document.getElementById('app-title').innerText = "EMPIRE PROTOCOL 66";
+            timerSeconds = 66; 
+            updateTimerDisplay();
+        } else {
+            document.body.classList.remove('order-66');
+            document.getElementById('app-title').innerText = "Jedi Holocron";
         }
 
-        window.addEventListener('load', () => {
-            initializeGoogleSignIn();
+        workspace.innerHTML = `<h3 style="color:var(--jedi-blue); margin-bottom:15px; font-size:16px; text-transform:uppercase; font-weight:bold;">${config.name}</h3>`;
+
+        if(config.isMeditation) {
+            workspace.innerHTML += `
+                <div style="text-align:center; padding:20px 0;">
+                    <p style="font-size:16px; margin-bottom:15px; color:#788ba6;">Clear your mind. Align your connection to the Force.</p>
+                    <button class="btn-jedi" onclick="setupMeditationSession()">Initialize 30m Meditation</button>
+                </div>
+            `;
+            return;
+        }
+
+        config.exercises.forEach(ex => {
+            let card = document.createElement('div');
+            card.className = 'exercise-card';
+            
+            let cardHeader = `
+                <div class="exercise-title">${ex.name} <span style="font-size:12px; color:#566985; font-weight:normal;">(Target: ${ex.targetReps})</span></div>
+                <div class="set-row" style="border-bottom:1px solid #1c232e; padding-bottom:6px; margin-bottom:8px;">
+                    <div class="set-label">SET</div>
+                    <div class="set-label">LBS</div>
+                    <div class="set-label">REPS</div>
+                </div>
+            `;
+            card.innerHTML = cardHeader;
+
+            for (let s = 1; s <= ex.sets; s++) {
+                let setRow = document.createElement('div');
+                setRow.className = 'set-row';
+                
+                const isLocked = config.isOrder66;
+                const repVal = isLocked ? 'value="6" readonly style="color:var(--imperial-red); font-weight:bold;"' : 'placeholder="0"';
+                
+                setRow.innerHTML = `
+                    <div class="set-label">#0${s}</div>
+                    <input type="number" id="${ex.id}_w_${s}" class="weight-input" data-exercise="${ex.id}" data-set="${s}" placeholder="0">
+                    <input type="number" id="${ex.id}_r_${s}" class="rep-input" data-exercise="${ex.id}" data-set="${s}" ${repVal}>
+                `;
+                card.appendChild(setRow);
+            }
+            workspace.appendChild(card);
         });
 
-        // Handle Google Drive Sync
-        window.handleGoogleDriveSync = async function() {
-            const syncBtn = document.getElementById('syncBtn');
-            const syncStatus = document.getElementById('syncStatus');
-            
-            syncBtn.disabled = true;
-            syncStatus.textContent = 'Preparing sync...';
-            syncStatus.style.color = 'var(--jedi-accent)';
+        attachAutofillListeners(config.isOrder66);
+    }
 
-            if (!accessToken) {
-                tokenClient.requestAccessToken({ prompt: 'consent' });
-            } else {
-                syncToDrive();
+    // Downward Cascade Cascade Autofill Listeners
+    function attachAutofillListeners(isOrder66Locked) {
+        document.querySelectorAll('.weight-input').forEach(input => {
+            input.addEventListener('input', (e) => {
+                const currentSet = parseInt(e.target.dataset.set);
+                if (currentSet === 1) {
+                    const exId = e.target.dataset.exercise;
+                    const val = e.target.value;
+                    document.querySelectorAll(`.weight-input[data-exercise="${exId}"]`).forEach(childInput => {
+                        if (parseInt(childInput.dataset.set) > 1) {
+                            childInput.value = val;
+                        }
+                    });
+                }
+            });
+        });
+
+        if (!isOrder66Locked) {
+            document.querySelectorAll('.rep-input').forEach(input => {
+                input.addEventListener('input', (e) => {
+                    const currentSet = parseInt(e.target.dataset.set);
+                    if (currentSet === 1) {
+                        const exId = e.target.dataset.exercise;
+                        const val = e.target.value;
+                        document.querySelectorAll(`.rep-input[data-exercise="${exId}"]`).forEach(childInput => {
+                            if (parseInt(childInput.dataset.set) > 1) {
+                                childInput.value = val;
+                            }
+                        });
+                    }
+                });
+            });
+        }
+    }
+
+    // Synthesizer Audio Engine
+    function triggerAudioCue(type) {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        
+        osc.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        if (type === 'click') {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, audioCtx.currentTime); 
+            gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.05);
+        } else if (type === 'beep') {
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+            gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.1);
+        } else if (type === 'alarm') {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(120, audioCtx.currentTime);
+            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.8);
+        }
+    }
+
+    // Integrated Background Video Node (YouTube System Core)
+    function initYouTubePlayerEngine() {
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    }
+
+    function onYouTubeIframeAPIReady() {
+        ytPlayer = new YT.Player('inline-audio-node', {
+            height: '0',
+            width: '0',
+            videoId: 'HqqV-Vf_kXU', 
+            events: {
+                'onReady': () => console.log("Force Audio Node Active")
             }
+        });
+    }
+
+    function setupMeditationSession() {
+        timerSeconds = 1800; 
+        updateTimerDisplay();
+        if(ytPlayer && ytPlayer.loadVideoById) {
+            ytPlayer.loadVideoById('wS8WFr_N_I4'); 
+            ytPlayer.playVideo();
+        }
+    }
+
+    // Countdown Modules
+    function startTimer() {
+        clearInterval(countdownInterval);
+        triggerAudioCue('click');
+        countdownInterval = setInterval(() => {
+            if (timerSeconds > 0) {
+                timerSeconds--;
+                updateTimerDisplay();
+                if(timerSeconds === 0) {
+                    handleTimerExpiry();
+                }
+            } else {
+                clearInterval(countdownInterval);
+            }
+        }, 1000);
+    }
+
+    function resetTimer() {
+        clearInterval(countdownInterval);
+        timerSeconds = routines[activeDay].isOrder66 ? 66 : 0;
+        updateTimerDisplay();
+        if(ytPlayer && ytPlayer.stopVideo) ytPlayer.stopVideo();
+    }
+
+    function updateTimerDisplay() {
+        let min = Math.floor(timerSeconds / 60);
+        let sec = timerSeconds % 60;
+        document.getElementById('timer-time').innerText = 
+            `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+    }
+
+    function handleTimerExpiry() {
+        clearInterval(countdownInterval);
+        if (routines[activeDay].isOrder66) {
+            triggerAudioCue('alarm');
+            if(ytPlayer && ytPlayer.loadVideoById) {
+                ytPlayer.loadVideoById('YBlVea9Bv0o'); 
+                ytPlayer.playVideo();
+            }
+        } else {
+            triggerAudioCue('beep');
+        }
+    }
+
+    // Committing Logs to JSON Manifest Data structure
+    function saveCurrentWorkout() {
+        const todayStr = new Date().toDateString();
+        
+        if (appState.lastLoggedDate !== todayStr) {
+            appState.streak = (appState.streak || 0) + 1;
+            appState.lastLoggedDate = todayStr;
+        }
+        
+        appState.totalWorkouts = (appState.totalWorkouts || 0) + 1;
+        
+        const entry = {
+            date: new Date().toISOString(),
+            day: activeDay,
+            name: routines[activeDay].name,
+            stats: {}
         };
 
-        async function syncToDrive() {
-            const syncStatus = document.getElementById('syncStatus');
-            const syncBtn = document.getElementById('syncBtn');
+        document.querySelectorAll('#exercise-workspace input').forEach(input => {
+            entry.stats[input.id] = input.value;
+        });
 
-            try {
-                syncStatus.textContent = 'Syncing to Google Drive...';
+        appState.history.push(entry);
+        saveLocalStorageState();
+        triggerAudioCue('beep');
 
-                // Create or update file in Google Drive
-                const fileData = {
-                    date: new Date().toISOString(),
-                    workouts: workoutData
-                };
+        pushToGoogleDriveHolocron(entry);
+        alert("Holocron log updated successfully!");
+    }
 
-                const fileName = 'Jedi_Force_Training_Workouts.json';
-                
-                // First, try to find if file already exists
-                const searchResponse = await fetch(
-                    `https://www.googleapis.com/drive/v3/files?q=name='${fileName}' and trashed=false&spaces=drive&fields=files(id,name)`,
-                    {
-                        headers: { 'Authorization': `Bearer ${accessToken}` }
-                    }
-                );
+    // Drive REST Layer
+    function initGoogleAuthInfrastructure() {
+        gapi.load('client', async () => {
+            await gapi.client.init({
+                discoveryDocs: [DISCOVERY_DOC],
+            });
+            gapiInited = true;
+        });
 
-                const searchData = await searchResponse.json();
-                let fileId = null;
+        tokenClient = google.accounts.oauth2.initTokenClient({
+            client_id: GOOGLE_CLIENT_ID,
+            scope: SCOPES,
+            callback: (resp) => {
+                if (resp.error !== undefined) return;
+                document.getElementById('sync-status').innerText = "DATAPAD SYNC: CONNECTED (DRIVE MASTER)";
+                document.getElementById('auth-btn').style.display = "none";
+                initializeOrFetchDriveDatabase();
+            },
+        });
+        gsiInited = true;
+    }
 
-                if (searchData.files && searchData.files.length > 0) {
-                    fileId = searchData.files[0].id;
-                }
+    function handleAuthClick() {
+        if (!gapiInited || !gsiInited) return;
+        tokenClient.requestAccessToken({prompt: 'consent'});
+    }
 
-                // Prepare the file content
-                const blob = new Blob([JSON.stringify(fileData, null, 2)], { type: 'application/json' });
-                const metadata = { name: fileName };
-
-                let url, method;
-                if (fileId) {
-                    // Update existing file
-                    url = `https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=multipart`;
-                    method = 'PATCH';
-                } else {
-                    // Create new file
-                    url = 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
-                    method = 'POST';
-                }
-
-                // Create multipart body
-                const multipartBody = 
-                    '--boundary\r\n' +
-                    'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
-                    JSON.stringify(metadata) + '\r\n' +
-                    '--boundary\r\n' +
-                    'Content-Type: application/json\r\n\r\n' +
-                    JSON.stringify(fileData) + '\r\n' +
-                    '--boundary--';
-
-                const uploadResponse = await fetch(url, {
-                    method: method,
-                    headers: {
-                        'Authorization': `Bearer ${accessToken}`,
-                        'Content-Type': 'multipart/related; boundary=boundary'
-                    },
-                    body: multipartBody
+    async function initializeOrFetchDriveDatabase() {
+        try {
+            let response = await gapi.client.drive.files.list({
+                q: "name = 'jedi_force_training_manifest.json' and trashed = false",
+                fields: 'files(id, name)'
+            });
+            
+            let files = response.result.files;
+            if (files && files.length > 0) {
+                driveFileId = files[0].id;
+                let fileData = await gapi.client.drive.files.get({
+                    fileId: driveFileId,
+                    alt: 'media'
                 });
-
-                if (uploadResponse.ok) {
-                    const timestamp = new Date().toLocaleTimeString();
-                    syncStatus.textContent = `✓ Synced at ${timestamp}`;
-                    syncStatus.style.color = 'var(--success)';
-                    
-                    setTimeout(() => {
-                        syncStatus.textContent = '';
-                    }, 3000);
-                } else {
-                    throw new Error('Upload failed');
+                if (fileData.result && fileData.result.history) {
+                    appState = fileData.result;
+                    saveLocalStorageState();
                 }
-            } catch (error) {
-                console.error('Sync error:', error);
-                syncStatus.textContent = '✗ Sync failed. Check console.';
-                syncStatus.style.color = 'var(--warning)';
-            } finally {
-                syncBtn.disabled = false;
+            } else {
+                createDriveDatabaseFile();
             }
+        } catch (err) {
+            console.error("Holocron syncing engine disrupted", err);
         }
-    </script>
+    }
+
+    async function createDriveDatabaseFile() {
+        const boundary = 'foo_bar_baz';
+        const delimiter = "\r\n--" + boundary + "\r\n";
+        const close_delim = "\r\n--" + boundary + "--";
+
+        const metadata = {
+            'name': 'jedi_force_training_manifest.json',
+            'mimeType': 'application/json'
+        };
+
+        const multipartRequestBody =
+            delimiter +
+            'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
+            JSON.stringify(metadata) +
+            delimiter +
+            'Content-Type: application/json\r\n\r\n' +
+            JSON.stringify(appState) +
+            close_delim;
+
+        let request = gapi.client.request({
+            'path': '/upload/drive/v3/files',
+            'method': 'POST',
+            'params': {'uploadType': 'multipart'},
+            'headers': { 'Content-Type': 'multipart/related; boundary="' + boundary + '"' },
+            'body': multipartRequestBody
+        });
+        
+        request.execute((file) => {
+            if(file.id) driveFileId = file.id;
+        });
+    }
+
+    async function pushToGoogleDriveHolocron(newEntry) {
+        if (!driveFileId) return; 
+        
+        gapi.client.request({
+            path: `/upload/drive/v3/files/${driveFileId}`,
+            method: 'PATCH',
+            params: { uploadType: 'media' },
+            body: JSON.stringify(appState)
+        }).execute();
+    }
+</script>
 </body>
 </html>
