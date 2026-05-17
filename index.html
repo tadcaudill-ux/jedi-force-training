@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="google-site-verification" content="AbCWHf5IQ62fp8a7AlaUQLRCjaxGdXWuKpxiZhFUvQc" />
+     <meta name="google-site-verification" content="AbCWHf5IQ62fp8a7AlaUQLRCjaxGdXWuKpxiZhFUvQc" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Jedi Force Training Datapad</title>
@@ -15,7 +15,7 @@
             --datapad-bg: #0c0f12;
             --panel-bg: #151a21;
             --grime-color: #242c37;
-            --text-main: #ffffff;
+            --text-main: #ffffff; /* Upgraded to high-contrast white */
             --imperial-red: #ff3333;
             --imperial-glow: rgba(255, 51, 51, 0.5);
         }
@@ -98,7 +98,7 @@
             background: #1c232e;
             color: var(--jedi-blue);
             border: 1px solid var(--jedi-blue);
-            padding: 12px 18px; /* Large mobile thumb friendly target */
+            padding: 12px 18px;
             font-family: inherit;
             cursor: pointer;
             text-transform: uppercase;
@@ -162,13 +162,18 @@
         }
         .exercise-title {
             font-size: 16px;
-            color: #b0c4de !important;/* Forces the target reps text to a clear, high-contrast light steel blue/white */
+            color: var(--jedi-blue);
             margin-bottom: 12px;
             text-transform: uppercase;
             font-weight: bold;
         }
 
-        /* Mobile Rep Grid Redesign */
+        /* Fixed Title Specific Selection Rules */
+        .exercise-title span {
+            color: #b0c4de !important;
+            font-weight: bold;
+        }
+
         .set-row {
             display: grid;
             grid-template-columns: 55px 1fr 1fr;
@@ -178,19 +183,18 @@
         }
         .set-label { font-size: 13px; color: #788ba6; font-weight: bold; }
         
-        /* Tactical Big Input Fields */
         input[type="number"], input[type="text"] {
             background: #07090c;
             border: 1px solid #3a4659;
             color: #fff;
-            padding: 12px 5px; /* Huge vertical touch zone */
+            padding: 12px 5px;
             font-family: inherit;
             text-align: center;
             border-radius: 6px;
-            font-size: 18px; /* Stops iOS from auto-zooming screen structure */
+            font-size: 18px;
             width: 100%;
             font-weight: bold;
-            -webkit-appearance: none; /* Strip standard apple formatting */
+            -webkit-appearance: none;
         }
         input[type="number"]:focus {
             outline: none;
@@ -478,7 +482,7 @@
         if(config.isMeditation) {
             workspace.innerHTML += `
                 <div style="text-align:center; padding:15px 0;">
-                    <p style="font-size:15px; margin-bottom:15px; color:#788ba6;">Align your connection to the Force.</p>
+                    <p style="font-size:16px; margin-bottom:15px; color:#788ba6;">Align your connection to the Force.</p>
                     <button class="btn-jedi" onclick="setupMeditationSession()">Begin 30m Meditation</button>
                 </div>`;
             return;
@@ -488,7 +492,7 @@
             let card = document.createElement('div');
             card.className = 'exercise-card';
             card.innerHTML = `
-                <div class="exercise-title">${ex.name} <span style="font-size:12px; color:#566985; font-weight:normal;">(${ex.targetReps})</span></div>
+                <div class="exercise-title">${ex.name} <span style="font-size:12px; color:#b0c4de; font-weight:bold;">(${ex.targetReps})</span></div>
                 <div class="set-row" style="border-bottom:1px solid #1c232e; padding-bottom:4px; margin-bottom:8px;">
                     <div class="set-label">SET</div>
                     <div class="set-label">LBS</div>
@@ -499,7 +503,6 @@
                 let setRow = document.createElement('div');
                 setRow.className = 'set-row';
                 const isLocked = config.isOrder66;
-                // Optimized numeric patterns for phone virtual layout keyboards
                 const repVal = isLocked ? 'value="6" readonly style="color:var(--imperial-red);"' : 'placeholder="0" inputmode="numeric" pattern="[0-9]*"';
                 
                 setRow.innerHTML = `
