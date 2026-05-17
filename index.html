@@ -37,7 +37,7 @@
                 radial-gradient(circle at 20% 30%, #1e2530 1px, transparent 1px),
                 radial-gradient(circle at 75% 60%, #1e2530 2px, transparent 2px);
             background-size: 100% 100%, 20px 20px, 30px 30px;
-            font-size: 18px; /* Increased baseline font size */
+            font-size: 18px; /* High visibility scaling */
         }
 
         /* Datapad Frame & Greebles */
@@ -57,7 +57,7 @@
             position: absolute;
             top: 2px;
             right: 15px;
-            font-size: 11px; /* Scaled up */
+            font-size: 11px;
             color: #566985;
             letter-spacing: 1px;
         }
@@ -78,11 +78,11 @@
             font-weight: bold;
             letter-spacing: 2px;
             text-shadow: 0 0 8px var(--jedi-glow);
-            font-size: 22px; /* Scaled up */
+            font-size: 22px;
         }
 
         .rank-badge {
-            font-size: 15px; /* Scaled up */
+            font-size: 15px;
             background: #0c0f12;
             padding: 6px 10px;
             border: 1px solid var(--jedi-blue);
@@ -94,7 +94,7 @@
 
         /* Interface Panels */
         .panel {
-            padding: 20px; /* More spacing for readability */
+            padding: 20px;
             border-bottom: 1px solid #242c37;
         }
 
@@ -104,7 +104,7 @@
             align-items: center;
             background: #0e1217;
             padding: 10px 15px;
-            font-size: 14px; /* Scaled up */
+            font-size: 14px;
             border-bottom: 1px dashed #3a4659;
         }
 
@@ -112,11 +112,11 @@
             background: #1c232e;
             color: var(--jedi-blue);
             border: 1px solid var(--jedi-blue);
-            padding: 10px 16px; /* Larger tap targets */
+            padding: 10px 16px; /* Enhanced tap targeting */
             font-family: inherit;
             cursor: pointer;
             text-transform: uppercase;
-            font-size: 15px; /* Scaled up */
+            font-size: 15px;
             transition: all 0.2s ease;
             box-shadow: 0 0 4px var(--jedi-glow);
             font-weight: bold;
@@ -143,31 +143,36 @@
             text-align: center;
         }
         .stat-val {
-            font-size: 28px; /* Scaled up */
+            font-size: 28px;
             color: var(--jedi-blue);
             text-shadow: 0 0 6px var(--jedi-glow);
             font-weight: bold;
         }
-        .stat-lbl { font-size: 13px; color: #788ba6; text-transform: uppercase; } /* Scaled up */
+        .stat-lbl { font-size: 13px; color: #788ba6; text-transform: uppercase; }
 
-        /* Workout Selector HUD Row */
+        /* Workout Selector HUD Row - Fixed Mobile Carousel */
         .workout-nav {
             display: flex;
-            gap: 8px;
+            gap: 10px;
             overflow-x: auto;
-            padding: 12px 0;
-            scrollbar-width: thin;
+            overflow-y: hidden;
+            padding: 12px 5px;
+            -webkit-overflow-scrolling: touch;
+            width: 100%;
         }
+        
         .nav-tab {
             background: #10141a;
             border: 1px solid #2d3745;
             color: #788ba6;
-            padding: 10px 16px; /* Larger tap targets */
-            font-size: 14px; /* Scaled up */
+            padding: 12px 20px;
+            font-size: 15px;
             white-space: nowrap;
             cursor: pointer;
             text-transform: uppercase;
             font-weight: bold;
+            flex-shrink: 0; /* Locked width constraint */
+            border-radius: 4px;
         }
         .nav-tab.active {
             border-color: var(--jedi-blue);
@@ -185,7 +190,7 @@
             border-radius: 0 6px 6px 0;
         }
         .exercise-title {
-            font-size: 17px; /* Scaled up */
+            font-size: 17px;
             color: var(--jedi-blue);
             margin-bottom: 12px;
             text-transform: uppercase;
@@ -195,22 +200,22 @@
 
         .set-row {
             display: grid;
-            grid-template-columns: 70px 1fr 1fr; /* Adjusted column width */
+            grid-template-columns: 70px 1fr 1fr;
             gap: 12px;
             align-items: center;
             margin-bottom: 10px;
         }
-        .set-label { font-size: 14px; color: #788ba6; font-weight: bold; } /* Scaled up */
+        .set-label { font-size: 14px; color: #788ba6; font-weight: bold; }
         
         input[type="number"] {
             background: #07090c;
             border: 1px solid #242c37;
             color: #fff;
-            padding: 8px; /* Larger touch fields */
+            padding: 8px;
             font-family: inherit;
             text-align: center;
             border-radius: 4px;
-            font-size: 16px; /* Scaled up */
+            font-size: 16px;
         }
         input[type="number"]:focus {
             outline: none;
@@ -228,7 +233,7 @@
             position: relative;
         }
         .timer-display {
-            font-size: 46px; /* Scaled up */
+            font-size: 46px;
             color: var(--jedi-blue);
             text-shadow: 0 0 10px var(--jedi-glow);
             font-weight: bold;
@@ -298,7 +303,7 @@
 
 <script>
     // Configuration Definitions
-    const GOOGLE_CLIENT_ID = 1012052270218-vopkhnc3o37312a0eko2iruqp1tjhn0v.apps.googleusercontent.com; 
+    const GOOGLE_CLIENT_ID = '1012052270218-vopkhnc3o37312a0eko2iruqp1tjhn0v.apps.googleusercontent.com'; 
     const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest';
     const SCOPES = 'https://www.googleapis.com/auth/drive.file';
 
@@ -547,7 +552,7 @@
             
             let cardHeader = `
                 <div class="exercise-title">${ex.name} <span style="font-size:12px; color:#566985; font-weight:normal;">(Target: ${ex.targetReps})</span></div>
-                <div class="set-row" style="border-bottom:1px solid #1c232e; padding-bottom:6px; margin-bottom:8px;">
+                <div class="set-row" style="border-bottom:1px solid #1c232e; padding-bottom:4px; margin-bottom:6px;">
                     <div class="set-label">SET</div>
                     <div class="set-label">LBS</div>
                     <div class="set-label">REPS</div>
@@ -676,7 +681,7 @@
             if (timerSeconds > 0) {
                 timerSeconds--;
                 updateTimerDisplay();
-                if(timerSeconds === 0) {
+                if (timerSeconds === 0) {
                     handleTimerExpiry();
                 }
             } else {
